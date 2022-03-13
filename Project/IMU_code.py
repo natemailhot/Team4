@@ -20,103 +20,102 @@ from pydub.playback import play
 															#ALL PRINT STATMENTS ARE STILL IN THIS CODE
 
 
-main():
+Q_angle = 0.02
+Q_gyro = 0.0015
+R_angle = 0.005
+y_bias = 0.0
+x_bias = 0.0
+XP_00 = 0.0
+XP_01 = 0.0
+XP_10 = 0.0
+XP_11 = 0.0
+YP_00 = 0.0
+YP_01 = 0.0
+YP_10 = 0.0
+YP_11 = 0.0
+KFangleX = 0.0
+KFangleY = 0.0
+
+
+def kalmanFilterY ( accAngle, gyroRate, DT):
+	y=0.0
+	S=0.0
+
+	global KFangleY
+	global Q_angle
+	global Q_gyro
+	global y_bias
+	global YP_00
+	global YP_01
+	global YP_10
+	global YP_11
+
+	KFangleY = KFangleY + DT * (gyroRate - y_bias)
+
+	YP_00 = YP_00 + ( - DT * (YP_10 + YP_01) + Q_angle * DT )
+	YP_01 = YP_01 + ( - DT * YP_11 )
+	YP_10 = YP_10 + ( - DT * YP_11 )
+	YP_11 = YP_11 + ( + Q_gyro * DT )
+
+	y = accAngle - KFangleY
+	S = YP_00 + R_angle
+	K_0 = YP_00 / S
+	K_1 = YP_10 / S
+
+	KFangleY = KFangleY + ( K_0 * y )
+	y_bias = y_bias + ( K_1 * y )
+
+	YP_00 = YP_00 - ( K_0 * YP_00 )
+	YP_01 = YP_01 - ( K_0 * YP_01 )
+	YP_10 = YP_10 - ( K_1 * YP_00 )
+	YP_11 = YP_11 - ( K_1 * YP_01 )
+
+	return KFangleY
+
+
+def kalmanFilterX ( accAngle, gyroRate, DT):
+	x=0.0
+	S=0.0
+
+	global KFangleX
+	global Q_angle
+	global Q_gyro
+	global x_bias
+	global XP_00
+	global XP_01
+	global XP_10
+	global XP_11
+
+
+	KFangleX = KFangleX + DT * (gyroRate - x_bias)
+
+	XP_00 = XP_00 + ( - DT * (XP_10 + XP_01) + Q_angle * DT )
+	XP_01 = XP_01 + ( - DT * XP_11 )
+	XP_10 = XP_10 + ( - DT * XP_11 )
+	XP_11 = XP_11 + ( + Q_gyro * DT )
+
+	x = accAngle - KFangleX
+	S = XP_00 + R_angle
+	K_0 = XP_00 / S
+	K_1 = XP_10 / S
+
+	KFangleX = KFangleX + ( K_0 * x )
+	x_bias = x_bias + ( K_1 * x )
+
+	XP_00 = XP_00 - ( K_0 * XP_00 )
+	XP_01 = XP_01 - ( K_0 * XP_01 )
+	XP_10 = XP_10 - ( K_1 * XP_00 )
+	XP_11 = XP_11 - ( K_1 * XP_01 )
+
+	return KFangleX
+
+def main():
 
 	IMU.detectIMU()     #Detect if BerryIMU is connected.
 	if(IMU.BerryIMUversion == 99):
-		print(" No BerryIMU found... exiting ")
+		print(" No BerryIMU found... exiting ")						#print
 		sys.exit()
 	IMU.initIMU()       #Initialise the accelerometer, gyroscope and compass
-
-
-	Q_angle = 0.02
-	Q_gyro = 0.0015
-	R_angle = 0.005
-	y_bias = 0.0
-	x_bias = 0.0
-	XP_00 = 0.0
-	XP_01 = 0.0
-	XP_10 = 0.0
-	XP_11 = 0.0
-	YP_00 = 0.0
-	YP_01 = 0.0
-	YP_10 = 0.0
-	YP_11 = 0.0
-	KFangleX = 0.0
-	KFangleY = 0.0
-
-	def kalmanFilterY ( accAngle, gyroRate, DT):
-		y=0.0
-		S=0.0
-
-		global KFangleY
-		global Q_angle
-		global Q_gyro
-		global y_bias
-		global YP_00
-		global YP_01
-		global YP_10
-		global YP_11
-
-		KFangleY = KFangleY + DT * (gyroRate - y_bias)
-
-		YP_00 = YP_00 + ( - DT * (YP_10 + YP_01) + Q_angle * DT )
-		YP_01 = YP_01 + ( - DT * YP_11 )
-		YP_10 = YP_10 + ( - DT * YP_11 )
-		YP_11 = YP_11 + ( + Q_gyro * DT )
-
-		y = accAngle - KFangleY
-		S = YP_00 + R_angle
-		K_0 = YP_00 / S
-		K_1 = YP_10 / S
-
-		KFangleY = KFangleY + ( K_0 * y )
-		y_bias = y_bias + ( K_1 * y )
-
-		YP_00 = YP_00 - ( K_0 * YP_00 )
-		YP_01 = YP_01 - ( K_0 * YP_01 )
-		YP_10 = YP_10 - ( K_1 * YP_00 )
-		YP_11 = YP_11 - ( K_1 * YP_01 )
-
-		return KFangleY
-
-
-	def kalmanFilterX ( accAngle, gyroRate, DT):
-		x=0.0
-		S=0.0
-
-		global KFangleX
-		global Q_angle
-		global Q_gyro
-		global x_bias
-		global XP_00
-		global XP_01
-		global XP_10
-		global XP_11
-
-
-		KFangleX = KFangleX + DT * (gyroRate - x_bias)
-
-		XP_00 = XP_00 + ( - DT * (XP_10 + XP_01) + Q_angle * DT )
-		XP_01 = XP_01 + ( - DT * XP_11 )
-		XP_10 = XP_10 + ( - DT * XP_11 )
-		XP_11 = XP_11 + ( + Q_gyro * DT )
-
-		x = accAngle - KFangleX
-		S = XP_00 + R_angle
-		K_0 = XP_00 / S
-		K_1 = XP_10 / S
-
-		KFangleX = KFangleX + ( K_0 * x )
-		x_bias = x_bias + ( K_1 * x )
-
-		XP_00 = XP_00 - ( K_0 * XP_00 )
-		XP_01 = XP_01 - ( K_0 * XP_01 )
-		XP_10 = XP_10 - ( K_1 * XP_00 )
-		XP_11 = XP_11 - ( K_1 * XP_01 )
-
-		return KFangleX
-
 
 
 
@@ -196,6 +195,8 @@ main():
 	mag_medianTable2X = [1] * MAG_MEDIANTABLESIZE
 	mag_medianTable2Y = [1] * MAG_MEDIANTABLESIZE
 	mag_medianTable2Z = [1] * MAG_MEDIANTABLESIZE
+
+
 
 
 	count=1
@@ -428,14 +429,16 @@ main():
 
 		xang.append(gyroXangle)
 		count=count+1
-		print('counting')
-		print(gyroXangle)
+
+
+		print('counting')			#print
+		print(gyroXangle)			#print
 
 
 
 	xang[xang == 0] = np.nan   #takes zeroes out of average
 	mean = np.nanmean(xang)
-	print(mean)
+	print(mean)						#print
 
 	ans = ''
 
@@ -449,8 +452,10 @@ main():
 		ans = '>'
 
 
-
+	print(ans)						#print
 	return ans
+
+main()
 
 
 
