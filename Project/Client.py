@@ -28,11 +28,12 @@ pygame.display.set_caption("Client")
 
 
 def draw_window(WIN, game):
+
     WIN.fill((0,0,0))
 
     if not game.connected():
         font = pygame.font.SysFont('comicsansms', 64)
-        text = font.render("Waiting for Player...", (255,255,255), True)
+        text = font.render("Waiting for Player...", True, (255,255,255))
         WIN.blit(text, text.get_rect(center = (WIDTH/2, HEIGHT/2)))
     else:
         font = pygame.font.SysFont('comicsansms', 64)
@@ -40,6 +41,7 @@ def draw_window(WIN, game):
         centerRect = text.get_rect(center = (WIDTH/2, HEIGHT/2))
         WIN.blit(text, centerRect)
     pygame.display.update()
+    
 
 def main():
     n = Network()
@@ -57,10 +59,30 @@ def main():
             print("Couldn't get game")
             break
 
+        
         ## If both player went, display each player's correctness
         if game.bothWent():
             WIN.fill((0,0,0))
             pygame.time.delay(500)
+
+            font = pygame.font.SysFont('comicsansms', 64)
+
+            if game.p1():
+                p1Text = font.render('Player 1 is Correct!', True, (255,255,255))
+            else:
+                p1Text = font.render('Player 1 is Incorrect.', True, (255,255,255))
+            if game.p2():
+                p2Text = font.render('Player 2 is Correct!', True, (255,255,255))
+            else:
+                p2Text = font.render('Player 2 is Incorrect.', True, (255,255,255))
+
+            p1Rect = p1Text.get_rect(center = (WIDTH/2, HEIGHT/2 - 50))
+            p2Rect = p2Text.get_rect(center = (WIDTH/2, HEIGHT/2 + 50))
+            WIN.blit(p1Text, p1Rect)
+            WIN.blit(p2Text, p2Rect)
+            pygame.display.update()
+            pygame.time.delay(5000)
+
             try:
                 game = n.send("reset")
             except:
@@ -68,43 +90,27 @@ def main():
                 print("Couldn't get game")
                 break
 
-            font = pygame.font.SysFont('comicsansms', 64)
-
-            if game.p1():
-                p1Text = font.render('Player 1 is Correct!', False, (255,255,255))
-            else:
-                p1Text = font.render('Player 1 is Incorrect.', False, (255,255,255))
-            if game.p2():
-                p2Text = font.render('Player 2 is Correct!', False, (255,255,255))
-            else:
-                p2Text = font.render('Player 2 is Incorrect.', False, (255,255,255))
-
-            p1Rect = p1Text.get_rect(center = (WIDTH/2, HEIGHT/2 - 50))
-            p2Rect = p2Text.get_rect(center = (WIDTH/2, HEIGHT/2 + 50))
-            WIN.blit(p1Text, p1Rect)
-            WIN.blit(p2Text, p2Rect)
-            pygame.display.update()
-            pygame.time.delay(2000)
-
-
-
         
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 run = False
                 pygame.quit()
 
-        draw_window(WIN, game)
+        
         if game.connected():
-            if not game.went[player]:
+            if game.getWent(player):
+                font = pygame.font.SysFont('comicsansms', 64)
+                text = font.render("Waiting...", True, (255,255,255))
+                WIN.blit(text, text.get_rect(center = (WIDTH/2, HEIGHT/2)))
+                pygame.display.update()
+            else:
+                draw_window(WIN, game)
                 game.play(player)
+                game.went[player] = True        
+        else:
+            draw_window(WIN, game)
 
         
-        
-
-        
-        
-
 
 
 def menu_screen():

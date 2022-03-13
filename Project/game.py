@@ -9,11 +9,12 @@ from pydub.playback import play
 
 class Game:
     def __init__(self, id):
+        self.modes = ['Keyboard', 'Keyboard']
         self.went = [False, False]
         self.ready = False
         self.id = id
         self.answers = ['a', 'a']
-        self.solution = ''
+        self.keySol = ''
         self.sounds = ['Notes/D3.wav', 'Notes/F3.wav']
         self.melody = []
         self.melodySize = 2
@@ -36,23 +37,40 @@ class Game:
 
         for i in range(len(relation)):
             if relation[i] < 0:
-                self.solution += 'v'
+                self.keySol += 'v'
             elif relation[i] == 0:
-                self.solution += '>'
+                self.keySol += '>'
             elif relation[i] > 0:
-                self.solution += '^'
+                self.keySol += '^'
 
     def play(self, player):
         self.makeMelody()
         self.playSound()
-        print(player)
-        self.answers[player] = input('^, >, v')
-        if self.answers[player] == self.solution:
-            if player == 0:
-                self.p1 = True
-            else:
-                self.p2 = True
-        self.went[player] = True
+#        print(player)
+
+        if self.modes[player] == "Keyboard":
+            self.answers[player] = input('^, >, v')
+            if self.answers[player] == self.keySol:
+                if player == 0:
+                    self.p1 = True
+                else:
+                    self.p2 = True
+            self.went[player] = True
+
+        if self.modes[player] == "IMU":
+            self.answers[player] = IMU_code.run(...)
+            if self.answers[player] == self.imuSol:
+                if player == 0:
+                    self.p1 = True
+                else:
+                    self.p2 = True
+            self.went[player] = True
+    
+    def getWent(self, player):
+        return(self.went[player])
+
+    def getAns(self, player):
+        return(self.answers[player])
 
 
     def connected(self):
