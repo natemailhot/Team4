@@ -46,8 +46,7 @@ def on_message(client, userdata, message):
 	for character in disallowed_characters:
 		message_string = message_string.replace(character, "")
 	ans = message_string
-
-	print('returned ' + ans)
+	
 	global count
 	count = 1
 
@@ -73,7 +72,7 @@ def main():
 	client.loop_stop()
 	client.disconnect()
 
-	print(ans)
+	print('returned ' + ans)
 	return ans
 	
 
