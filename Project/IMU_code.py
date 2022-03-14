@@ -16,8 +16,15 @@ import time,logging
 from pydub import AudioSegment
 from pydub.playback import play
 
-															#code is called and returns either (v,^,>)
+
 															#ALL PRINT STATMENTS ARE STILL IN THIS CODE
+
+
+IMU.detectIMU()     #Detect if BerryIMU is connected.
+if(IMU.BerryIMUversion == 99):
+	print(" No BerryIMU found... exiting ")
+	sys.exit()
+IMU.initIMU()       #Initialise the accelerometer, gyroscope and compass
 
 
 Q_angle = 0.02
@@ -35,7 +42,6 @@ YP_10 = 0.0
 YP_11 = 0.0
 KFangleX = 0.0
 KFangleY = 0.0
-
 
 def kalmanFilterY ( accAngle, gyroRate, DT):
 	y=0.0
@@ -109,14 +115,10 @@ def kalmanFilterX ( accAngle, gyroRate, DT):
 
 	return KFangleX
 
-def main():
-
-	IMU.detectIMU()     #Detect if BerryIMU is connected.
-	if(IMU.BerryIMUversion == 99):
-		print(" No BerryIMU found... exiting ")						#print
-		sys.exit()
-	IMU.initIMU()       #Initialise the accelerometer, gyroscope and compass
-
+def on_message(client, userdata, message):
+	print('message received')
+	
+	ans = ''
 
 
 	RAD_TO_DEG = 57.29578
@@ -195,8 +197,6 @@ def main():
 	mag_medianTable2X = [1] * MAG_MEDIANTABLESIZE
 	mag_medianTable2Y = [1] * MAG_MEDIANTABLESIZE
 	mag_medianTable2Z = [1] * MAG_MEDIANTABLESIZE
-
-
 
 
 	count=1
@@ -410,7 +410,7 @@ def main():
 			outputString +="# kalmanX %5.2f   kalmanY %5.2f #" % (kalmanX,kalmanY)
 
 		# IDLE
-		kalXarray += [kalmanX]     #this block of code compares kalXarray values within 5 readings of each other to see if they have changed by a significant margin
+		kalXarray += [kalmanX]
 		kalXarray.pop(0)
 		Idle = abs(kalXarray[0] - kalXarray[-1])
 		if Idle < 2:
@@ -429,18 +429,17 @@ def main():
 
 		xang.append(gyroXangle)
 		count=count+1
+		print('counting')
+		print(gyroXangle)
 
 
-		print('counting')			#print
-		print(gyroXangle)			#print
 
 
 
 	xang[xang == 0] = np.nan   #takes zeroes out of average
 	mean = np.nanmean(xang)
-	print(mean)						#print
+	print(mean)
 
-	ans = ''
 
 	if mean<-0.7: #upward movement of hand (instruct to hold hand when finished)
 		ans = '^'
@@ -451,12 +450,31 @@ def main():
 	elif mean>-0.7 and mean<0.7: #no movement of hand (instruct to hold hand when finished)
 		ans = '>'
 
+	clienttemp = mqtt.Client('tempclient')
+	clienttemp.connect_async('test.mosquitto.org')
+	clienttemp.loop_start()
+	clienttemp.publish('ece180d/IMU2', str(ans), qos=1)
+	clienttemp.loop_stop() 
+	clienttemp.loop_stop()
+	clienttemp.disconnect()
 
-	print(ans)						#print
-	return ans
 
-main()
 
+
+client2 = mqtt.Client('secondclient')
+client2.on_message = on_message
+client2.connect_async('test.mosquitto.org')
+client2.loop_start()
+
+print('running')
+
+while True:
+	client2.subscribe('ece180d/IMU')
+
+
+
+client.loop_stop()
+client.disconnect()
 
 
 
