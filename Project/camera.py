@@ -2,7 +2,7 @@ import cv2
 import mediapipe as mp
 from typing import NamedTuple
 
-def level_three():
+def camera(str_length):
     mp_drawing = mp.solutions.drawing_utils
     mp_drawing_styles = mp.solutions.drawing_styles
     mp_hands = mp.solutions.hands
@@ -118,6 +118,9 @@ def level_three():
                     answer  = answer + key
                     prev_key_count = 0
                     arr.append(num)
+            
+            if str_length == len(arr):
+                break
             
             # Flip the image horizontally for a selfie-view display.
             cv2.imshow('MediaPipe Hands', cv2.flip(image, 1))
