@@ -126,8 +126,10 @@ def camera(str_length):
             cv2.imshow('MediaPipe Hands', cv2.flip(image, 1))
             if cv2.waitKey(5) & 0xFF == 27:
                 break
-
-    return arr
+    ans = ''
+    for i in range(len(arr)):
+        ans += str(i)
+    return ans
 
     cap.release()
 

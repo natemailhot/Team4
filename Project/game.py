@@ -69,7 +69,7 @@ class Game:
         elif mode == 'IMU':
             self.answers[player] = IMU_main.main()
         elif mode == 'Camera':
-            self.answers[player] = camera.level_three()
+            self.answers[player] = camera.camera(self.melodySize)
         elif mode == 'Speech':
             self.answers[player] = speech.speechRecognition()
 
