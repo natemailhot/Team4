@@ -6,7 +6,7 @@ from pydub.playback import play
 
 ## Import these to test
 
-#import IMU_code
+#import IMU_main
 #import camera
 #import medium_mode_DandF as speech
 
