@@ -94,14 +94,16 @@ def camera(str_length):
                     key = 'D'
                 print(key)
             '''
-            key = 'd'
-            num = 0
+            
             in_h = False
             if p_y*h < (h//2 + 100) and p_y*h > (h//2 - 100):
                 in_h = True
                 p_x *= w
                 if p_x < mid_w*2 and p_x > mid_w:
-                    key = 'f'
+                    key = '0'
+                    num = 0
+                else:
+                    key = '1'
                     num = 1
                 
                 if prev_key == "":
@@ -118,6 +120,7 @@ def camera(str_length):
                     answer  = answer + key
                     prev_key_count = 0
                     arr.append(num)
+                    print(num)
             
             if str_length == len(arr):
                 break
@@ -126,12 +129,13 @@ def camera(str_length):
             cv2.imshow('MediaPipe Hands', cv2.flip(image, 1))
             if cv2.waitKey(5) & 0xFF == 27:
                 break
-    ans = ''
-    for i in range(len(arr)):
-        ans += str(i)
-    return ans
 
+    # for i in range(len(arr)):
+    #     ans += str(i)
+    
     cap.release()
+    return answer
 
-#array_returned = level_three()
+
+#array_returned = camera(2)
 #print(array_returned)

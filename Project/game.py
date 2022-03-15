@@ -76,15 +76,18 @@ class Game:
         return(self.answers[player])
             
 
-    def check(self, player, ans):
+    def check(self, player, ans, mode):
         self.answers[player] = ans
+        self.modes[player] = mode
         if self.modes[player] == "Keyboard" or self.modes[player] ==  "IMU": 
             if ans == self.keySol:
                 if player == 0:
                     self.p1 = True
                 else:
                     self.p2 = True
-        if self.modes[player] == "Camera" or self.modes[player] == "Speech":
+        elif self.modes[player] == "Camera" or self.modes[player] == "Speech":
+            print(self.speechSol)
+            print()
             if ans == self.speechSol:
                 if player == 0:
                     self.p1 = True
