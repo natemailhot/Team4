@@ -26,7 +26,7 @@ pygame.font.init()
 WIDTH, HEIGHT = 900, 500
 WIN = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption("Client")
-MODES = {pygame.K_k: 'Keyboard', pygame.K_i: 'IMU', pygame.K_c: 'Camera', pygame.K_s: 'Speech'}
+MODES = {pygame.K_k: 'Keyboard', pygame.K_i: 'IMU', pygame.K_c: "Camera", pygame.K_s: "Speech"}
 
 
 class Button:
@@ -138,7 +138,7 @@ def main(MODE):
                 draw_window(WIN, game)
                 game.playSound()
                 ans = game.play(player, MODE)
-                n.send(ans)        
+                n.send(ans + ' ' + MODE)        
         else:
             draw_window(WIN, game)
 

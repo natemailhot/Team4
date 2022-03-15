@@ -28,7 +28,6 @@ def threaded_client(conn, p, gameId):
     while True:
         try:
             data = conn.recv(4096).decode()
-
             if gameId in games:
                 game = games[gameId]
 
@@ -38,7 +37,8 @@ def threaded_client(conn, p, gameId):
                     if data == "reset":
                         game.resetWent()
                     elif data != "get":
-                        game.check(p, data)
+                        ans, mode = data.split()
+                        game.check(p, ans, mode)
                     
                     conn.sendall(pickle.dumps(game))
             else:
