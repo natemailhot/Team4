@@ -19,6 +19,7 @@ class Game:
         self.id = id
         self.answers = ['a', 'a']
         self.keySol = ''
+        self.speechSol = ''
         self.sounds = ['Notes/D3.wav', 'Notes/F3.wav']
         self.melody = [1, 1]
         self.melodySize = 2
@@ -27,6 +28,7 @@ class Game:
 
         for i in range(self.melodySize):
             self.melody[i] = random.randint(0, len(self.sounds)-1)
+            self.speechSol += str(self.melody[i])
         relation = [0]*(self.melodySize-1)
         for i in range(self.melodySize-1):
             relation[i] = self.melody[i+1] - self.melody[i]
@@ -98,7 +100,7 @@ class Game:
                 else:
                     self.p2 = True
         if self.modes[player] == "Camera" or self.modes[player] == "Speech":
-            if ans == self.melody:
+            if ans == self.speechSol:
                 if player == 0:
                     self.p1 = True
                 else:
