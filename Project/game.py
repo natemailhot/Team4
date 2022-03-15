@@ -3,12 +3,13 @@ import os
 import random
 from pydub import AudioSegment
 from pydub.playback import play
+import IMU_main
+import medium_mode_DandF as speech
+import camera
 
-## Import these to test
 
-#import IMU_code
-#import camera
-#import medium_mode_DandF as speech
+
+
 
 
 class Game:
@@ -46,22 +47,6 @@ class Game:
             sound = AudioSegment.from_wav(self.sounds[self.melody[i]])
             play(sound)
 
-    # def makeMelody(self):
-    #     for i in range(self.melodySize):
-    #         self.melody.append(random.randint(0, len(self.sounds)-1))
-        
-    #     relation = [0]*(self.melodySize-1)
-    #     for i in range(self.melodySize-1):
-    #         relation[i] = self.melody[i+1] - self.melody[i]
-
-    #     for i in range(len(relation)):
-    #         if relation[i] < 0:
-    #             self.keySol += 'v'
-    #         elif relation[i] == 0:
-    #             self.keySol += '>'
-    #         elif relation[i] > 0:
-    #             self.keySol += '^'
-
     def getP1(self):
         return(self.p1)
 
@@ -81,12 +66,12 @@ class Game:
 
         ## UNCOMMENT TO TEST
 
-        # elif mode == 'IMU':
-        #     self.answers[player] = IMU_code.main()
-        # elif mode == 'Camera':
-        #     self.answers[player] = camera.level_three()
-        # elif mode == 'Speech':
-        #     self.answers[player] = speech.TODO()
+        elif mode == 'IMU':
+            self.answers[player] = IMU_main.main()
+        elif mode == 'Camera':
+            self.answers[player] = camera.level_three()
+        elif mode == 'Speech':
+            self.answers[player] = speech.speechRecognition()
 
         return(self.answers[player])
             
