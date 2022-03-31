@@ -14,36 +14,45 @@ import medium_mode_DandF as speech
 
 class Game:
     def __init__(self, id):
+        self.round = 0
         self.modes = ['Keyboard', 'Keyboard']
         self.went = [False, False]
         self.ready = False
         self.id = id
-        self.answers = ['a', 'a']
-        self.keySol = ''
+        self.answers = ['a','a']
+        self.sol = ''
         self.speechSol = ''
         self.sounds = ['Notes/D3.wav', 'Notes/F3.wav']
-        self.melody = [1, 1]
-        self.melodySize = 2
+        self.melody = [0]
         self.p1 = False
         self.p2 = False
+        self.newRound()
+    
+    def newRound(self):
+        self.round += 1
 
-        for i in range(self.melodySize):
+        self.melody.append(0)
+        for i in range(self.round+1):
             self.melody[i] = random.randint(0, len(self.sounds)-1)
             self.speechSol += str(self.melody[i])
-        relation = [0]*(self.melodySize-1)
-        for i in range(self.melodySize-1):
+        relation = [0]*(self.round)
+        for i in range(self.round):
             relation[i] = self.melody[i+1] - self.melody[i]
         for i in range(len(relation)):
             if relation[i] < 0:
-                self.keySol += 'v'
+                self.sol += 'v'
             elif relation[i] == 0:
-                self.keySol += '>'
+                self.sol += '>'
             elif relation[i] > 0:
-                self.keySol += '^'
-    
+                self.sol += '^'
+        self.resetWent()
+
+    def reset():
+        round = 1
+        self.resetWent()
 
     def playSound(self):
-        for i in range(self.melodySize):
+        for i in range(self.round+1):
             sound = AudioSegment.from_wav(self.sounds[self.melody[i]])
             play(sound)
 
@@ -59,17 +68,12 @@ class Game:
 
 
     def play(self, player, mode):
-
-        print(mode)
         if mode == 'Keyboard':
             self.answers[player] = input('^, >, v')
-
-        ## UNCOMMENT TO TEST
-
         elif mode == 'IMU':
             self.answers[player] = IMU_main.main()
         elif mode == 'Camera':
-            self.answers[player] = camera.camera(self.melodySize)
+            self.answers[player] = camera.camera(self.round+1)
         elif mode == 'Speech':
             self.answers[player] = speech.speechRecognition()
 
@@ -80,7 +84,7 @@ class Game:
         self.answers[player] = ans
         self.modes[player] = mode
         if self.modes[player] == "Keyboard" or self.modes[player] ==  "IMU": 
-            if ans == self.keySol:
+            if ans == self.sol:
                 if player == 0:
                     self.p1 = True
                 else:

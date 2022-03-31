@@ -54,7 +54,7 @@ class Button:
 
 btns = [Button("Keyboard", 50, 350, (0,0,0)), Button("IMU", 300, 350, (255,0,0)), Button("Speech", 550, 350, (0,255,0)), Button("Camera", 800, 350, (255,255,0))]
 
-def draw_window(WIN, game):
+def draw_window(WIN, game, round = 0):
 
     WIN.fill((0,0,0))
 
@@ -64,7 +64,7 @@ def draw_window(WIN, game):
         WIN.blit(text, text.get_rect(center = (WIDTH/2, HEIGHT/2)))
     else:
         font = pygame.font.SysFont('comicsansms', 64)
-        text = font.render('Round 1', False, (255,255,255))
+        text = font.render('Round ' + str(game.round), False, (255,255,255))
         centerRect = text.get_rect(center = (WIDTH/2, HEIGHT/2))
         WIN.blit(text, centerRect)
     pygame.display.update()
@@ -90,37 +90,43 @@ def main(MODE):
             break
 
         
-        ## If both player went, display each player's correctness
+        ## If both player went, next round or reset
         if game.bothWent():
             WIN.fill((0,0,0))
             pygame.time.delay(500)
 
             font = pygame.font.SysFont('comicsansms', 64)
 
-            if game.getP1():
-                p1Text = font.render('Player 1 is Correct!', True, (255,255,255))
+            if game.getP1() and game.getP2():
+                txt = font.render('Both players correct!', True, (255,255,255))
+                txtRect = txt.get_rect(center = (WIDTH/2, HEIGHT/2))
+                WIN.blit(txt, txtRect)
+                pygame.display.update()
+                pygame.time.delay(5000)
+                try:
+                    game = n.send("next")
+                except:
+                    run = False
+                    print("Couldn't make new round")
+                    break
             else:
-                p1Text = font.render('Player 1 is Incorrect.', True, (255,255,255))
-            if game.getP2():
-                p2Text = font.render('Player 2 is Correct!', True, (255,255,255))
-            else:
-                p2Text = font.render('Player 2 is Incorrect.', True, (255,255,255))
+                try:
+                    if game.getP1():
+                        winner = '1'
+                    else:
+                        winner = '2'
 
-            p1Rect = p1Text.get_rect(center = (WIDTH/2, HEIGHT/2 - 50))
-            p2Rect = p2Text.get_rect(center = (WIDTH/2, HEIGHT/2 + 50))
-            WIN.blit(p1Text, p1Rect)
-            WIN.blit(p2Text, p2Rect)
-            pygame.display.update()
-            pygame.time.delay(5000)
+                    txt = font.render('Player ' + winner + ' wins!', True, (255,255,255))
+                    txtRect = txt.get_rect(center = (WIDTH/2, HEIGHT/2))
+                    WIN.blit(txt, txtRect)
+                    pygame.display.update()
+                    pygame.time.delay(5000)
+                    game = n.send("reset")
+                except:
+                    run = False
+                    print("Couldn't get game")
+                    break
 
-            try:
-                game = n.send("reset")
-            except:
-                run = False
-                print("Couldn't get game")
-                break
-
-        
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 run = False
@@ -138,7 +144,8 @@ def main(MODE):
                 draw_window(WIN, game)
                 game.playSound()
                 ans = game.play(player, MODE)
-                n.send(ans + ' ' + MODE)        
+                print(ans)
+                n.send(MODE + ' ' + ans)        
         else:
             draw_window(WIN, game)
 
