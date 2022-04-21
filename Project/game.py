@@ -10,41 +10,114 @@ import IMU_main
 import camera
 import medium_mode_DandF as speech
 
+modes = ['Keyboard', 'Camera', 'Speech', 'IMU']
+sounds = ['Notes/A3.wav', 'Notes/B3.wav', 'Notes/C4.wav', 'Notes/D4.wav', 'Notes/E4.wav', 'Notes/F4.wav', 'Notes/G4.wav']
 
 
 class Game:
     def __init__(self, id):
-        self.modes = ['Keyboard', 'Keyboard']
-        self.went = [False, False]
+        self.boardH = 2
+        self.boardW = 2
+        self.board = self.makeBoard(self.boardH, self.boardW)
+        self.currPlayer = 0
+        self.rolled = False
+        self.phase = 'board'
+        self.went = False
+        self.correct = False
         self.ready = False
         self.id = id
-        self.answers = ['a', 'a']
-        self.keySol = ''
-        self.speechSol = ''
-        self.sounds = ['Notes/D3.wav', 'Notes/F3.wav']
-        self.melody = [1, 1]
-        self.melodySize = 2
-        self.p1 = False
-        self.p2 = False
+        self.numPlayers = 2
+        self.spots = [0 for i in range(self.numPlayers)]
+        self.currAnswer = ''
+        self.currRoll = 0
+        self.currMode = 'Keyboard'
+        self.sol = ''
+        self.melody = [0]
+        self.winner = 0
+        
 
-        for i in range(self.melodySize):
-            self.melody[i] = random.randint(0, len(self.sounds)-1)
-            self.speechSol += str(self.melody[i])
-        relation = [0]*(self.melodySize-1)
-        for i in range(self.melodySize-1):
-            relation[i] = self.melody[i+1] - self.melody[i]
-        for i in range(len(relation)):
-            if relation[i] < 0:
-                self.keySol += 'v'
-            elif relation[i] == 0:
-                self.keySol += '>'
-            elif relation[i] > 0:
-                self.keySol += '^'
+
+    def makeBoard(self, h, w):
+        board = [0 for i in range(w*h)]
+        # for i in range(h):
+        #     for j in range(w):
+        #         board[8*i+j] = random.randint(0, 3)
+        return(board)
     
 
+    def newRoll(self, num):
+        num = int(num)
+        self.currRoll = num
+        self.rolled = True
+        if self.spots[self.currPlayer] + self.currRoll < len(self.board):
+            self.currMode = modes[self.board[self.spots[self.currPlayer] + self.currRoll]]
+        else:
+            self.currMode = modes[self.board[-1]]
+        self.makeSound(self.currMode)
+    
+
+    def makeSound(self, mode):
+        print(self.currRoll)
+        self.sol = ''
+        self.melody = [0 for i in range(self.currRoll)]
+
+        if mode == 'Keyboard' or mode == 'IMU':
+            relation = [0 for i in range(self.currRoll - 1)]
+            for i in range(self.currRoll - 1):
+                relation[i] = self.melody[i+1] - self.melody[i]
+            self.sol = ''
+            for i in range(len(relation)):
+                if relation[i] < 0:
+                    self.sol += 'v'
+                elif relation[i] == 0:
+                    self.sol += '>'
+                elif relation[i] > 0:
+                    self.sol += '^'
+        else:
+            for i in range(self.currRoll):
+                self.melody[i] = random.randint(0, len(sounds)-1)
+                self.sol += str(self.melody[i])
+
+        print(self.melody)
+        print(self.sol)
+
+
+    def nextPhase(self, phase):
+        if phase == 'board':
+            print('dice')
+            self.phase = 'dice'
+
+        if phase == 'dice':
+            print('turn')
+            self.phase = 'turn'
+  
+        if phase == 'turn':
+            print('resetting')
+            self.reset()
+            self.phase = 'board'
+        
+        if phase == 'end':
+            self.phase = 'end'
+        
+    def getPhase(self):
+        return(self.phase)
+
+    def move(self):
+        self.spots[self.currPlayer] += self.currRoll
+        if self.spots[self.currPlayer] >= len(self.board):
+            self.phase = 'end'
+            self.winner = self.currPlayer
+        self.correct = False
+
+    def reset(self):
+        self.rolled = False
+        self.went = False
+        self.correct = False
+        self.currPlayer = (self.currPlayer+1)%self.numPlayers
+
     def playSound(self):
-        for i in range(self.melodySize):
-            sound = AudioSegment.from_wav(self.sounds[self.melody[i]])
+        for i in range(self.currRoll):
+            sound = AudioSegment.from_wav(sounds[self.melody[i]])
             play(sound)
 
     def getP1(self):
@@ -58,45 +131,26 @@ class Game:
         return
 
 
-    def play(self, player, mode):
-
-        print(mode)
-        if mode == 'Keyboard':
-            self.answers[player] = input('^, >, v')
-
-        ## UNCOMMENT TO TEST
-
-        elif mode == 'IMU':
-            self.answers[player] = IMU_main.main()
-        elif mode == 'Camera':
-            self.answers[player] = camera.camera(self.melodySize)
-        elif mode == 'Speech':
-            self.answers[player] = speech.speechRecognition()
-
-        return(self.answers[player])
+    def play(self):
+        print(self.currMode)
+        if self.currMode == 'Keyboard':
+            self.currAnswer = input('^, >, v')
+        elif self.currMode == 'IMU':
+            self.currAnswer = IMU_main.main()
+        elif self.currMode == 'Camera':
+            self.currAnswer = camera.camera(self.currRoll)
+        elif self.currMode == 'Speech':
+            self.currAnswer = speech.speechRecognition()
+        return(self.currAnswer)
             
 
-    def check(self, player, ans, mode):
-        self.answers[player] = ans
-        self.modes[player] = mode
-        if self.modes[player] == "Keyboard" or self.modes[player] ==  "IMU": 
-            if ans == self.keySol:
-                if player == 0:
-                    self.p1 = True
-                else:
-                    self.p2 = True
-        elif self.modes[player] == "Camera" or self.modes[player] == "Speech":
-            print(self.speechSol)
-            print()
-            if ans == self.speechSol:
-                if player == 0:
-                    self.p1 = True
-                else:
-                    self.p2 = True
-        self.went[player] = True
-    
-    def getWent(self, player):
-        return(self.went[player])
+    def check(self, ans):
+        if ans == self.sol:
+            self.correct = True
+            print("Correct!")
+        else:
+            print("Wrong")
+        self.went = True
 
     def getAns(self, player):
         return(self.answers[player])
@@ -104,11 +158,9 @@ class Game:
 
     def connected(self):
         return self.ready
-
-    def bothWent(self):
-        return(self.went[0] and self.went[1])
     
     def resetWent(self):
         self.went = [False, False]
         self.p1 = False
         self.p2 = False
+

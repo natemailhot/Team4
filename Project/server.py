@@ -1,10 +1,15 @@
+from ctypes import sizeof
 import socket
+import sys
 from _thread import *
 import pickle
 from game import Game
 
-server = "192.168.1.30"
+server = "172.30.8.243"
 port = 5555
+rolls = ('1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12')
+modes = ['Keyboard', 'IMU', 'Camera', 'Speech']
+phases = ['board', 'dice', 'turn', 'end']
 
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
@@ -36,11 +41,19 @@ def threaded_client(conn, p, gameId):
                 else:
                     if data == "reset":
                         game.resetWent()
+                    elif data in phases:
+                        game.nextPhase(data)
+                    elif data == "move":
+                        game.move()
+                    elif data in rolls:
+                        game.newRoll(data)
                     elif data != "get":
-                        ans, mode = data.split()
-                        game.check(p, ans, mode)
-                    
+                        game.check(data)
+                    # elif data != "get":
+                    #     mode, ans = data.split(' ', 1)
+                    #     game.check(p, ans, mode)
                     conn.sendall(pickle.dumps(game))
+                    
             else:
                 break
         except:
