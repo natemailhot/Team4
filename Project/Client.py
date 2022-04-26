@@ -2,15 +2,21 @@ import pygame
 from network import Network
 import time
 import random
+from pydub import AudioSegment
+from pydub.playback import play
+# from board import drawBoard
 
 
 ## Pygame Inits
 pygame.font.init()
 
 WIDTH, HEIGHT = 900, 500
+SQUARE_WIDTH = WIDTH//7
 WIN = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption("Client")
 MODES = ['Keyboard', 'IMU', 'Camera', 'Speech']
+SOUNDS = ['Notes/A3.wav', 'Notes/B3.wav', 'Notes/C4.wav', 'Notes/D4.wav', 'Notes/E4.wav', 'Notes/F4.wav', 'Notes/G4.wav']
+LETTERS = ['A', 'B', 'C', 'D', 'E', 'F', 'G']
 
 def drawWindow(WIN, game):
 
@@ -74,6 +80,24 @@ def drawEnd(WIN, game):
     WIN.blit(txt, txtRect)
     pygame.display.update()
 
+def drawSound(WIN, note):
+    WIN.fill((0,0,0))
+    font = pygame.font.SysFont('Arial', 64)
+    for i in range(7):
+        if i == note:
+            pygame.draw.rect(WIN, (255, 0, 0), pygame.Rect(i*SQUARE_WIDTH, HEIGHT//2-(SQUARE_WIDTH//2), SQUARE_WIDTH, SQUARE_WIDTH), 3)
+        else:
+            pygame.draw.rect(WIN, (0, 255, 0), pygame.Rect(i*SQUARE_WIDTH, HEIGHT//2-(SQUARE_WIDTH//2), SQUARE_WIDTH, SQUARE_WIDTH), 3)
+        txt = font.render(LETTERS[i], True, (255,255,255))
+        txtRect = txt.get_rect(center = (i*SQUARE_WIDTH + SQUARE_WIDTH//2, HEIGHT//2))
+        WIN.blit(txt, txtRect)
+    pygame.display.update()
+
+def playSound(WIN,game):
+    for i in range(game.currRoll):
+        drawSound(WIN, game.melody[i])
+        sound = AudioSegment.from_wav(SOUNDS[game.melody[i]])
+        play(sound)
 
 def main():
     n = Network()
@@ -86,10 +110,7 @@ def main():
         try:
             game = n.send("get")
         except:
-            run = False
-            print("Couldn't get game")
-            pygame.quit()
-            break
+            menu_screen()
 
 
         if not game.connected():
@@ -121,7 +142,7 @@ def main():
             elif game.phase == 'turn':
                 if game.currPlayer == player:
                     if not game.went:
-                        game.playSound()
+                        playSound(WIN, game)
                         ans = game.play()
                         n.send(ans)
                     else:
@@ -136,6 +157,9 @@ def main():
             
             elif game.phase == 'end':
                 drawEnd(WIN, game)
+                n.send('reset')
+                n.close()
+                menu_screen()
         
 
         ## If both player went, next round or reset
@@ -243,4 +267,6 @@ def menu_screen():
 
 while True:
     menu_screen()
+
+
 
