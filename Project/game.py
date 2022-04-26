@@ -1,8 +1,6 @@
  ## Melody Simon-says prototype ##
 import os
 import random
-from pydub import AudioSegment
-from pydub.playback import play
 import IMU_main
 import medium_mode_DandF as speech
 import camera
@@ -11,13 +9,11 @@ import camera
 import medium_mode_DandF as speech
 
 modes = ['Keyboard', 'Camera', 'Speech', 'IMU']
-sounds = ['Notes/A3.wav', 'Notes/B3.wav', 'Notes/C4.wav', 'Notes/D4.wav', 'Notes/E4.wav', 'Notes/F4.wav', 'Notes/G4.wav']
-
 
 class Game:
     def __init__(self, id):
-        self.boardH = 8
-        self.boardW = 8
+        self.boardH = 2
+        self.boardW = 2
         self.board = self.makeBoard(self.boardH, self.boardW)
         self.currPlayer = 0
         self.rolled = False
@@ -32,8 +28,8 @@ class Game:
         self.currRoll = 0
         self.currMode = 'Keyboard'
         self.sol = ''
-        self.speechSol = ''
         self.melody = [0]
+        self.winner = 0
         
 
 
@@ -59,24 +55,23 @@ class Game:
     def makeSound(self, mode):
         print(self.currRoll)
         self.sol = ''
-        self.speechSol = ''
         self.melody = [0 for i in range(self.currRoll)]
         for i in range(self.currRoll):
-            self.melody[i] = random.randint(0, len(sounds)-1)
-            self.speechSol += str(self.melody[i])
+            self.melody[i] = random.randint(0, 6) # 6 is number of sounds
+            self.sol += str(self.melody[i])
+        if mode == 'Keyboard' or mode == 'IMU':
+            relation = [0 for i in range(self.currRoll - 1)]
+            for i in range(self.currRoll - 1):
+                relation[i] = self.melody[i+1] - self.melody[i]
+            self.sol = ''
+            for i in range(len(relation)):
+                if relation[i] < 0:
+                    self.sol += 'v'
+                elif relation[i] == 0:
+                    self.sol += '>'
+                elif relation[i] > 0:
+                    self.sol += '^'
 
-            if mode == 'Keyboard' or mode == 'IMU':
-                relation = [0 for i in range(self.currRoll - 1)]
-                for i in range(self.currRoll - 1):
-                    relation[i] = self.melody[i+1] - self.melody[i]
-                self.sol = ''
-                for i in range(len(relation)):
-                    if relation[i] < 0:
-                        self.sol += 'v'
-                    elif relation[i] == 0:
-                        self.sol += '>'
-                    elif relation[i] > 0:
-                        self.sol += '^'
         print(self.melody)
         print(self.sol)
 
@@ -103,6 +98,9 @@ class Game:
 
     def move(self):
         self.spots[self.currPlayer] += self.currRoll
+        if self.spots[self.currPlayer] >= len(self.board):
+            self.phase = 'end'
+            self.winner = self.currPlayer
         self.correct = False
 
     def reset(self):
@@ -111,10 +109,11 @@ class Game:
         self.correct = False
         self.currPlayer = (self.currPlayer+1)%self.numPlayers
 
-    def playSound(self):
-        for i in range(self.currRoll):
-            sound = AudioSegment.from_wav(sounds[self.melody[i]])
-            play(sound)
+    def newGame(self):
+        self.rolled = False
+        self.went = False
+        self.correct = False
+        self.currPlayer = 0
 
     def getP1(self):
         return(self.p1)
@@ -141,15 +140,11 @@ class Game:
             
 
     def check(self, ans):
-        if self.currMode == "Keyboard" or self.currMode ==  "IMU": 
-            if ans == self.sol:
-                self.correct = True
-                print("Correct!")
-            else:
-                print("Wrong")
-        elif self.currMode == "Camera" or self.currMode == "Speech":
-            if ans == self.speechSol:
-                self.correct = True
+        if ans == self.sol:
+            self.correct = True
+            print("Correct!")
+        else:
+            print("Wrong")
         self.went = True
 
     def getAns(self, player):

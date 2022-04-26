@@ -136,6 +136,5 @@ def camera(str_length):
     cap.release()
     return answer
 
-
 #array_returned = camera(2)
 #print(array_returned)
