@@ -5,7 +5,7 @@ from _thread import *
 import pickle
 from game import Game
 
-server = "172.30.8.243"
+server = "192.168.1.89"
 port = 5555
 rolls = ('1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12')
 modes = ['Keyboard', 'IMU', 'Camera', 'Speech']
@@ -40,7 +40,7 @@ def threaded_client(conn, p, gameId):
                     break
                 else:
                     if data == "reset":
-                        game.resetWent()
+                        game.newGame()
                     elif data in phases:
                         game.nextPhase(data)
                     elif data == "move":
