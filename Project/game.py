@@ -1,8 +1,6 @@
  ## Melody Simon-says prototype ##
 import os
 import random
-from pydub import AudioSegment
-from pydub.playback import play
 import IMU_main
 import medium_mode_DandF as speech
 import camera
@@ -11,8 +9,6 @@ import camera
 import medium_mode_DandF as speech
 
 modes = ['Keyboard', 'Camera', 'Speech', 'IMU']
-sounds = ['Notes/A3.wav', 'Notes/B3.wav', 'Notes/C4.wav', 'Notes/D4.wav', 'Notes/E4.wav', 'Notes/F4.wav', 'Notes/G4.wav']
-
 
 class Game:
     def __init__(self, id):
@@ -60,7 +56,9 @@ class Game:
         print(self.currRoll)
         self.sol = ''
         self.melody = [0 for i in range(self.currRoll)]
-
+        for i in range(self.currRoll):
+            self.melody[i] = random.randint(0, 6) # 6 is number of sounds
+            self.sol += str(self.melody[i])
         if mode == 'Keyboard' or mode == 'IMU':
             relation = [0 for i in range(self.currRoll - 1)]
             for i in range(self.currRoll - 1):
@@ -73,10 +71,6 @@ class Game:
                     self.sol += '>'
                 elif relation[i] > 0:
                     self.sol += '^'
-        else:
-            for i in range(self.currRoll):
-                self.melody[i] = random.randint(0, len(sounds)-1)
-                self.sol += str(self.melody[i])
 
         print(self.melody)
         print(self.sol)
@@ -115,10 +109,11 @@ class Game:
         self.correct = False
         self.currPlayer = (self.currPlayer+1)%self.numPlayers
 
-    def playSound(self):
-        for i in range(self.currRoll):
-            sound = AudioSegment.from_wav(sounds[self.melody[i]])
-            play(sound)
+    def newGame(self):
+        self.rolled = False
+        self.went = False
+        self.correct = False
+        self.currPlayer = 0
 
     def getP1(self):
         return(self.p1)
