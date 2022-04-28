@@ -35,8 +35,9 @@ LETTERS = ['A', 'B', 'C', 'D', 'E', 'F', 'G']
 red=pygame.image.load("Archive/red.jpg")
 yellow=pygame.image.load("Archive/yellow.jpg")
 blue=pygame.image.load("Archive/blue.jpg")
-p1=pygame.image.load("Archive/p1.jpg")
-p2=pygame.image.load("Archive/p2.jpg")
+p1=pygame.image.load("Archive/p1.png")
+p2=pygame.image.load("Archive/p2.png")
+back=pygame.image.load("Archive/back.jpg")
 
 #adjust images to correct size
 red=pygame.transform.scale(red, (SQUARE_EDGE, SQUARE_EDGE))
@@ -44,6 +45,7 @@ yellow=pygame.transform.scale(yellow, (SQUARE_EDGE, SQUARE_EDGE))
 blue=pygame.transform.scale(blue, (SQUARE_EDGE, SQUARE_EDGE))
 p1=pygame.transform.scale(p1, (SQUARE_EDGE, SQUARE_EDGE))
 p2=pygame.transform.scale(p2, (SQUARE_EDGE, SQUARE_EDGE))
+back=pygame.transform.scale(back, (WIDTH, HEIGHT))
 
 
 def playGame(game, WIN):
@@ -52,7 +54,7 @@ def playGame(game, WIN):
         elif game.currMode == 'IMU':
             game.currAnswer = IMU_main.main()
         elif game.currMode == 'Camera':
-            game.currAnswer = camera.camera(game.currRoll)
+            game.currAnswer = camera.camera(1, game.currRoll)
         elif game.currMode == 'Speech':
             game.currAnswer = speech.speechRecognition(WIN)
         return(game.currAnswer)
@@ -60,7 +62,6 @@ def playGame(game, WIN):
 def drawWindow(WIN, game):
 
     WIN.fill((0,0,0))
-
     font = pygame.font.SysFont('comicsansms', 64)
     text = font.render("Waiting for Player...", True, (255,255,255))
     WIN.blit(text, text.get_rect(center = (WIDTH/2, HEIGHT/2)))
@@ -69,6 +70,7 @@ def drawWindow(WIN, game):
 
 def drawBoard(WIN, game, turn = False):
     WIN.fill((0,0,0))
+    WIN.blit(back,(0,0))
     font = pygame.font.SysFont('comicsansms', 64)
 
     drawBoardGrid(game)
@@ -98,12 +100,23 @@ def drawBoardGrid(game):
             board_width_start += SQUARE_EDGE
         board_height_start += SQUARE_EDGE
 
+    #for i in range(game.numPlayers):
+    r1 = game.spots[0] / BOARD_EDGE
+    c1 = game.spots[0] - BOARD_EDGE*r1
+    r2 = game.spots[1] / BOARD_EDGE
+    c2 = game.spots[1] - BOARD_EDGE*r2
+    w1 = (WIDTH - BOARD_EDGE_SIZE)/2 - 2*SQUARE_EDGE
+    h1 = (HEIGHT - BOARD_EDGE_SIZE)/2 + BOARD_EDGE_SIZE - SQUARE_EDGE
+    WIN.blit(p1,(w1 + (c1+1)*SQUARE_EDGE,h1 + r1*SQUARE_EDGE))
+    WIN.blit(p2,(w1 + (c2+1)*SQUARE_EDGE,h1 + r2*SQUARE_EDGE))
+
+
 
 def drawDiceRoll(WIN, game):
     WIN.fill((0,0,0))
     font = pygame.font.SysFont('comicsansms', 64)
     txt = font.render('Rolled a ' + str(game.currRoll), True, (255,255,255))
-    txtRect = txt.get_rect(center = (WIDTH/2, HEIGHT/2))
+    txtRect = txt.get_rect(center = (WIDTH/2, TEXT_HEIGHT))
     WIN.blit(txt, txtRect)
     pygame.display.update()
     pygame.time.delay(3000)
@@ -123,7 +136,7 @@ def drawTurn(WIN):
     WIN.fill((0,0,0))
     font = pygame.font.SysFont('comicsansms', 64)
     txt = font.render("Other player's move" , True, (255,255,255))
-    txtRect = txt.get_rect(center = (WIDTH/2, HEIGHT/2))
+    txtRect = txt.get_rect(center = (WIDTH/2, TEXT_HEIGHT))
     WIN.blit(txt, txtRect)
     pygame.display.update()
 
@@ -131,7 +144,7 @@ def drawEnd(WIN, game):
     WIN.fill((0,0,0))
     font = pygame.font.SysFont('comicsansms', 64)
     txt = font.render("Player " + str(game.winner + 1) + " wins!" , True, (255,255,255))
-    txtRect = txt.get_rect(center = (WIDTH/2, HEIGHT/2))
+    txtRect = txt.get_rect(center = (WIDTH/2, TEXT_HEIGHT))
     WIN.blit(txt, txtRect)
     pygame.display.update()
 
@@ -323,7 +336,3 @@ def menu_screen():
 
 while True:
     menu_screen()
-
-
-
-
