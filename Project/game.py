@@ -1,12 +1,7 @@
  ## Melody Simon-says prototype ##
 import os
 import random
-import IMU_main
-import medium_mode_DandF as speech
-import camera
-import IMU_main
-import camera
-import medium_mode_DandF as speech
+
 
 modes = ['Keyboard', 'Camera', 'Speech', 'IMU']
 
@@ -14,6 +9,7 @@ class Game:
     def __init__(self, id):
         self.boardH = 5
         self.boardW = 5
+        self.board = self.makeBoard(self.boardH, self.boardW)
         self.currPlayer = 0
         self.rolled = False
         self.phase = 'board'
@@ -29,15 +25,25 @@ class Game:
         self.sol = ''
         self.melody = [0]
         self.winner = 0
+        
+
+
+    def makeBoard(self, h, w):
+        board = [[0 for i in range(h)] for j in range(w)]
+        for i in range(h):
+            for j in range(w):
+                board[i][j] = random.randint(0, 0)
+        return(board)
+    
 
     def newRoll(self, num):
         num = int(num)
         self.currRoll = num
         self.rolled = True
-        if self.spots[self.currPlayer] + self.currRoll < len(self.board):
-            self.currMode = modes[self.board[self.spots[self.currPlayer] + self.currRoll]]
+        if self.spots[self.currPlayer] + self.currRoll < self.boardH*self.boardW:
+            self.currMode = modes[self.board[(self.spots[self.currPlayer] + self.currRoll)//self.boardH][(self.spots[self.currPlayer] + self.currRoll)%self.boardH]]
         else:
-            self.currMode = modes[self.board[-1]]
+            self.currMode = modes[self.board[self.boardH-1][self.boardW-1]]
         self.makeSound(self.currMode)
     
 
@@ -87,7 +93,7 @@ class Game:
 
     def move(self):
         self.spots[self.currPlayer] += self.currRoll
-        if self.spots[self.currPlayer] >= len(self.board):
+        if self.spots[self.currPlayer] >= self.boardH*self.boardW:
             self.phase = 'end'
             self.winner = self.currPlayer
         self.correct = False
@@ -113,19 +119,6 @@ class Game:
     def printMelody(self):
         print(self.melody)
         return
-
-
-    def play(self):
-        print(self.currMode)
-        if self.currMode == 'Keyboard':
-            self.currAnswer = input('^, >, v')
-        elif self.currMode == 'IMU':
-            self.currAnswer = IMU_main.main()
-        elif self.currMode == 'Camera':
-            self.currAnswer = camera.camera(self.currRoll)
-        elif self.currMode == 'Speech':
-            self.currAnswer = speech.speechRecognition()
-        return(self.currAnswer)
             
 
     def check(self, ans):
