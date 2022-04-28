@@ -25,28 +25,43 @@ BOARD_EDGE_SIZE = 500
 SQUARE_EDGE = BOARD_EDGE_SIZE/BOARD_EDGE
 TEXT_HEIGHT = (HEIGHT - BOARD_EDGE_SIZE)* 3/4 + BOARD_EDGE_SIZE
 
+DIE_LENGTH = 150
+
 SQUARE_WIDTH = WIDTH//7
 WIN = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption("Client")
-MODES = ['Keyboard', 'IMU', 'Camera', 'Speech']
+MODES = ['Keyboard', 'Camera', 'Speech']
 SOUNDS = ['Notes/A3.wav', 'Notes/B3.wav', 'Notes/C4.wav', 'Notes/D4.wav', 'Notes/E4.wav', 'Notes/F4.wav', 'Notes/G4.wav']
 LETTERS = ['A', 'B', 'C', 'D', 'E', 'F', 'G']
 
 red=pygame.image.load("Archive/red.jpg")
 yellow=pygame.image.load("Archive/yellow.jpg")
 blue=pygame.image.load("Archive/blue.jpg")
-p1=pygame.image.load("Archive/p1.png")
-p2=pygame.image.load("Archive/p2.png")
+p1=pygame.image.load("Archive/p1.jpg")
+p2=pygame.image.load("Archive/p2.jpg")
 back=pygame.image.load("Archive/back.jpg")
+D1=pygame.image.load("Archive/Dice1.jpg")
+D2=pygame.image.load("Archive/Dice2.jpg")
+D3=pygame.image.load("Archive/Dice3.jpg")
+D4=pygame.image.load("Archive/Dice4.jpg")
+D5=pygame.image.load("Archive/Dice5.jpg")
+D6=pygame.image.load("Archive/Dice6.jpg")
 
 #adjust images to correct size
 red=pygame.transform.scale(red, (SQUARE_EDGE, SQUARE_EDGE))
 yellow=pygame.transform.scale(yellow, (SQUARE_EDGE, SQUARE_EDGE))
 blue=pygame.transform.scale(blue, (SQUARE_EDGE, SQUARE_EDGE))
-p1=pygame.transform.scale(p1, (SQUARE_EDGE, SQUARE_EDGE))
-p2=pygame.transform.scale(p2, (SQUARE_EDGE, SQUARE_EDGE))
+p1=pygame.transform.scale(p1, (SQUARE_EDGE//2, SQUARE_EDGE//2))
+p2=pygame.transform.scale(p2, (SQUARE_EDGE//2, SQUARE_EDGE//2))
 back=pygame.transform.scale(back, (WIDTH, HEIGHT))
+D1=pygame.transform.scale(D1, (DIE_LENGTH,DIE_LENGTH))
+D2=pygame.transform.scale(D2, (DIE_LENGTH,DIE_LENGTH))
+D3=pygame.transform.scale(D3, (DIE_LENGTH,DIE_LENGTH))
+D4=pygame.transform.scale(D4, (DIE_LENGTH,DIE_LENGTH))
+D5=pygame.transform.scale(D5, (DIE_LENGTH,DIE_LENGTH))
+D6=pygame.transform.scale(D6, (DIE_LENGTH,DIE_LENGTH))
 
+DICE = {1:D1, 2:D2, 3:D3, 4:D4, 5:D5, 6:D6}
 
 def playGame(game, WIN):
         if game.currMode == 'Keyboard':
@@ -54,7 +69,7 @@ def playGame(game, WIN):
         elif game.currMode == 'IMU':
             game.currAnswer = IMU_main.main()
         elif game.currMode == 'Camera':
-            game.currAnswer = camera.camera(1, game.currRoll)
+            game.currAnswer = camera.camera(game.currRoll, 7)
         elif game.currMode == 'Speech':
             game.currAnswer = speech.speechRecognition(WIN)
         return(game.currAnswer)
@@ -75,9 +90,9 @@ def drawBoard(WIN, game, turn = False):
 
     drawBoardGrid(game)
     if turn:
-        txt = font.render('Click to roll', True, (255,255,255))     
+        txt = font.render('Roll the die!', True, (255,255,255))     
     else:
-        txt = font.render('Player ' + str(game.currPlayer + 1) + ': ' + str(game.spots[game.currPlayer]), True, (255,255,255))
+        txt = font.render("Other player's turn", True, (255,255,255))
     txtRect = txt.get_rect(center = (WIDTH/2, TEXT_HEIGHT))
     WIN.blit(txt, txtRect)
     pygame.display.update()
@@ -101,35 +116,47 @@ def drawBoardGrid(game):
         board_height_start += SQUARE_EDGE
 
     #for i in range(game.numPlayers):
-    r1 = game.spots[0] / BOARD_EDGE
-    c1 = game.spots[0] - BOARD_EDGE*r1
-    r2 = game.spots[1] / BOARD_EDGE
-    c2 = game.spots[1] - BOARD_EDGE*r2
-    w1 = (WIDTH - BOARD_EDGE_SIZE)/2 - 2*SQUARE_EDGE
-    h1 = (HEIGHT - BOARD_EDGE_SIZE)/2 + BOARD_EDGE_SIZE - SQUARE_EDGE
-    WIN.blit(p1,(w1 + (c1+1)*SQUARE_EDGE,h1 + r1*SQUARE_EDGE))
-    WIN.blit(p2,(w1 + (c2+1)*SQUARE_EDGE,h1 + r2*SQUARE_EDGE))
+    r1 = BOARD_EDGE - game.spots[0]//BOARD_EDGE
+    c1 = BOARD_EDGE - game.spots[0]%BOARD_EDGE
+    r2 = BOARD_EDGE - game.spots[1] // BOARD_EDGE
+    c2 = BOARD_EDGE - game.spots[1]%BOARD_EDGE
+    w1 = WIDTH - 350
+    #(WIDTH - BOARD_EDGE_SIZE)/2 - 2*SQUARE_EDGE
+    h1 = 100
+    WIN.blit(p1,(w1 - (c1+1)*SQUARE_EDGE, h1 + r1*SQUARE_EDGE))
+    WIN.blit(p2,(w1 - (c2+1)*SQUARE_EDGE+50,h1 + r2*SQUARE_EDGE))
 
 
 
-def drawDiceRoll(WIN, game):
+def drawDiceRoll(WIN, roll):
+    diceRect = D1.get_rect(center = (WIDTH/2, TEXT_HEIGHT))
+    for i in range(50):
+        pygame.time.delay(60)
+        WIN.fill((0,0,0))
+        WIN.blit(back, (0,0))
+        num = random.randint(1,6)
+        WIN.blit(DICE[num], diceRect)
+        pygame.display.update()
+    
+    
+    # font = pygame.font.SysFont('comicsansms', 64)
+    # txt = font.render('Rolled a ' + str(game.currRoll), True, (255,255,255))
+    
     WIN.fill((0,0,0))
-    font = pygame.font.SysFont('comicsansms', 64)
-    txt = font.render('Rolled a ' + str(game.currRoll), True, (255,255,255))
-    txtRect = txt.get_rect(center = (WIDTH/2, TEXT_HEIGHT))
-    WIN.blit(txt, txtRect)
-    pygame.display.update()
+    WIN.blit(back, (0,0))
+    WIN.blit(DICE[roll], diceRect)
     pygame.time.delay(3000)
     ## TO DO: make animation for dice roll
 
 def drawMove(WIN):
     WIN.fill((0,0,0))
+    WIN.blit(back, (0,0))
     font = pygame.font.SysFont('comicsansms', 64)
-    txt = font.render('Move animation' , True, (255,255,255))
-    txtRect = txt.get_rect(center = (WIDTH/2, HEIGHT/2))
+    txt = font.render('Correct!' , True, (255,255,255))
+    txtRect = txt.get_rect(center = (WIDTH/2, TEXT_HEIGHT))
     WIN.blit(txt, txtRect)
     pygame.display.update()
-    pygame.time.delay(3000)
+    pygame.time.delay(2000)
     ## TO DO: make animation for player movement on board
 
 def drawTurn(WIN):
@@ -142,6 +169,7 @@ def drawTurn(WIN):
 
 def drawEnd(WIN, game):
     WIN.fill((0,0,0))
+    WIN.blit(back, (0,0))
     font = pygame.font.SysFont('comicsansms', 64)
     txt = font.render("Player " + str(game.winner + 1) + " wins!" , True, (255,255,255))
     txtRect = txt.get_rect(center = (WIDTH/2, TEXT_HEIGHT))
@@ -189,8 +217,9 @@ def main():
             if game.phase == 'board':
                 if game.currPlayer == player:
                     drawBoard(WIN, game, True)
-                    if event.type == pygame.MOUSEBUTTONDOWN:
-                        n.send('board')
+                    #pygame.time.delay(3000)
+                    IMU_main.main()
+                    n.send('board')
                 else:
                     drawBoard(WIN, game)
                 for event in pygame.event.get():
@@ -201,11 +230,12 @@ def main():
             
             elif game.phase == 'dice':
                 if game.currPlayer == player:
-                    roll = random.randint(1, 12)
+                    roll = random.randint(1, 6)
                     print(str(roll))
                     n.send(str(roll))
                 if game.rolled:
-                    drawDiceRoll(WIN, game)
+                    game = n.send("get")
+                    drawDiceRoll(WIN, game.currRoll)
                     n.send('dice')
             
             elif game.phase == 'turn':
@@ -229,67 +259,11 @@ def main():
                 n.send('reset')
                 n.close()
                 menu_screen()
-        
-
-        ## If both player went, next round or reset
-        # if game.bothWent():
-        #     WIN.fill((0,0,0))
-        #     pygame.time.delay(500)
-
-        #     font = pygame.font.SysFont('comicsansms', 64)
-
-        #     if game.getP1() and game.getP2():
-        #         txt = font.render('Both players correct!', True, (255,255,255))
-        #         txtRect = txt.get_rect(center = (WIDTH/2, HEIGHT/2))
-        #         WIN.blit(txt, txtRect)
-        #         pygame.display.update()
-        #         pygame.time.delay(5000)
-        #         try:
-        #             game = n.send("next")
-        #         except:
-        #             run = False
-        #             print("Couldn't make new round")
-        #             break
-        #     else:
-        #         try:
-        #             if game.getP1():
-        #                 winner = '1'
-        #             else:
-        #                 winner = '2'
-
-        #             txt = font.render('Player ' + winner + ' wins!', True, (255,255,255))
-        #             txtRect = txt.get_rect(center = (WIDTH/2, HEIGHT/2))
-        #             WIN.blit(txt, txtRect)
-        #             pygame.display.update()
-        #             pygame.time.delay(5000)
-        #             game = n.send("reset")
-        #         except:
-        #             run = False
-        #             print("Couldn't get game")
-        #             break
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 run = False
                 pygame.quit()
-
-        
-        # if game.connected():
-        #     if game.getWent(player):
-        #         WIN.fill((0,0,0))
-        #         font = pygame.font.SysFont('comicsansms', 64)
-        #         text = font.render("Waiting...", True, (255,255,255))
-        #         WIN.blit(text, text.get_rect(center = (WIDTH/2, HEIGHT/2)))
-        #         pygame.display.update()
-        #     else:
-        #         drawWindow(WIN, game)
-        #         game.playSound()
-        #         ans = game.play(player, MODE)
-        #         print(ans)
-        #         n.send(MODE + ' ' + ans)        
-        # else:
-        #     drawWindow(WIN, game)
-
         
 
 
@@ -300,15 +274,15 @@ def menu_screen():
     while run:
         clock.tick(60)
         WIN.fill((0,0,0))
-
+        WIN.blit(back, (0,0))
 
         font = pygame.font.SysFont('comicsansms', 64)
         subfont = pygame.font.SysFont('comicsansms', 48)
         text = font.render('PitchPerfect.io', False, (255,255,255))
         subtext = subfont.render("Press any key to start", False, (255,255,255))
         #subtext = subfont.render("Mode: (K)eyboard, (I)MU, (C)amera, (S)peech", False, (255,255,255))
-        centerRect = text.get_rect(center = (WIDTH/2, HEIGHT/2))
-        subRect = subtext.get_rect(center = (WIDTH/2, HEIGHT/2 + 100))
+        centerRect = text.get_rect(center = (WIDTH/2, HEIGHT/2 - 175))
+        subRect = subtext.get_rect(center = (WIDTH/2, HEIGHT/2 + 175))
         WIN.blit(text, centerRect)
         WIN.blit(subtext, subRect)
         # for btn in btns:
