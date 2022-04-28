@@ -51,8 +51,11 @@ def speechRecognition(WIN):
                 
                 
             #window drawing
-
-            text = font.render(letters[i.lower()], True, (255,255,255))
+            if i.lower() in letters:
+                txt = letters[i.lower()]
+            else:
+                txt = i
+            text = font.render(txt, True, (255,255,255))
             WIN.blit(text, text.get_rect(center = (WIDTH/2, HEIGHT/2)))
             pygame.display.update()
         
