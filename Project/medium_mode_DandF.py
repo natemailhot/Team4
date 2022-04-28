@@ -1,33 +1,71 @@
 import speech_recognition as sr
+import pygame
 
+letters = {'alpha': 'A', 'bravo': 'B', 'charlie': 'C', 'delta': 'D', 'echo': 'E', 'foxtrot': 'F', 'golf': 'G'}
 
-def speechRecognition():
+pygame.font.init()
+
+WIDTH, HEIGHT = 1400, 800
+WIN = pygame.display.set_mode((WIDTH, HEIGHT))
+pygame.display.set_caption("Client")
+
+def speechRecognition(WIN):
+    WIN.fill((0,0,0))
+    font = pygame.font.SysFont('comicsansms', 20)
+    text = font.render('Calibrating...', True, (255,255,255))
+    WIN.blit(text, text.get_rect(center = (WIDTH/2, HEIGHT/2)))
+    pygame.display.update()
+    pygame.time.delay(2000)
 
     r = sr.Recognizer()
     m = sr.Microphone()
-
+    
+    run = True
+    answer = '' #answer in number form
     with m as source: r.adjust_for_ambient_noise(source)
-    with m as source: audio = r.listen(source)
-    try:
-        # recognize speech using Google Speech Recognition
-        value = r.recognize_google(audio)
-        # value is the variable here
+    WIN.fill((0,0,0))
+    text = font.render("Ready!", True, (255,255,255))
+    WIN.blit(text, text.get_rect(center = (WIDTH/2, HEIGHT/2)))
+    pygame.display.update()
+
+    while run:
+        WIN.fill((0,0,0))
+        with m as source: audio = r.listen(source)
+        try:
+            # recognize speech using Google Speech Recognition
+            i = r.recognize_google(audio)
+            # value is the variable here
+            
+            #speech_input_list = value.split()   #separates speech input into a list of words
+            
+            if(i == 'alpha' or i == 'Alpha'):
+                answer = answer + '0'
+            elif(i == 'bravo' or i == 'Bravo'):
+                answer = answer + '1'
+            elif(i == 'charlie' or i == 'Charlie'):
+                answer = answer + '2'
+            elif(i == 'delta' or i == 'Delta'):
+                answer = answer + '3'
+            elif(i == 'echo' or i == 'Echo'):
+                answer = answer + '4'
+            elif(i == 'foxtrot' or i == 'Foxtrot'):
+                answer = answer + '5'
+            elif(i == 'golf' or i == 'Golf'):
+                answer = answer + '6'
+                
+                
+            #window drawing
+
+            text = font.render(letters[i.lower()], True, (255,255,255))
+            WIN.blit(text, text.get_rect(center = (WIDTH/2, HEIGHT/2)))
+            pygame.display.update()
         
-        #checks for 'D' and 'F'   and   Returns 0 or 1  or "Wrong Answer"
-        if value == 'delta foxtrot' or value == 'Delta Foxtrot' or value == 'delta Foxtrot' or value =='Delta foxtrot':
-            return "01"
-        elif value == 'foxtrot delta' or value == 'Foxtrot Delta' or value == 'Foxtrot delta' or value == 'foxtrot Delta':
-            return "10"
-        elif value == 'delta delta' or value == 'Delta Delta' or value == 'Delta delta' or value == 'delta Delta':
-            return "00"
-        elif value == 'foxtrot foxtrot' or value == 'Foxtrot Foxtrot' or value == 'Foxtrot foxtrot' or value == 'foxtrot Foxtrot':
-            return "11"
-        else:
-            print(value)
-            return "Wrong Answer"
             
     #speech Recognition errors
-    except sr.UnknownValueError:
-        return "Quiet"
-    except sr.RequestError as e:
-        return "Uh oh! Couldn't request results from Google Speech Recognition service; {0}"
+        except sr.UnknownValueError:
+            run = False
+        except sr.RequestError as e:
+            return "Uh oh! Couldn't request results from Google Speech Recognition service; {0}"
+    return answer
+
+speechRecognition(WIN)
