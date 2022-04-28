@@ -12,9 +12,8 @@ modes = ['Keyboard', 'Camera', 'Speech', 'IMU']
 
 class Game:
     def __init__(self, id):
-        self.boardH = 2
-        self.boardW = 2
-        self.board = self.makeBoard(self.boardH, self.boardW)
+        self.boardH = 5
+        self.boardW = 5
         self.currPlayer = 0
         self.rolled = False
         self.phase = 'board'
@@ -30,16 +29,6 @@ class Game:
         self.sol = ''
         self.melody = [0]
         self.winner = 0
-        
-
-
-    def makeBoard(self, h, w):
-        board = [0 for i in range(w*h)]
-        # for i in range(h):
-        #     for j in range(w):
-        #         board[8*i+j] = random.randint(0, 3)
-        return(board)
-    
 
     def newRoll(self, num):
         num = int(num)
