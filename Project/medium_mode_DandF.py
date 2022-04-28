@@ -3,12 +3,6 @@ import pygame
 
 letters = {'alpha': 'A', 'bravo': 'B', 'charlie': 'C', 'delta': 'D', 'echo': 'E', 'foxtrot': 'F', 'golf': 'G'}
 
-pygame.font.init()
-
-WIDTH, HEIGHT = 1400, 800
-WIN = pygame.display.set_mode((WIDTH, HEIGHT))
-pygame.display.set_caption("Client")
-
 def speechRecognition(WIN):
     WIN.fill((0,0,0))
     font = pygame.font.SysFont('comicsansms', 20)
@@ -67,5 +61,3 @@ def speechRecognition(WIN):
         except sr.RequestError as e:
             return "Uh oh! Couldn't request results from Google Speech Recognition service; {0}"
     return answer
-
-speechRecognition(WIN)
