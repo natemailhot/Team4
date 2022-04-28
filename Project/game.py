@@ -158,3 +158,4 @@ class Game:
         self.went = [False, False]
         self.p1 = False
         self.p2 = False
+
