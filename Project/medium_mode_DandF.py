@@ -1,6 +1,8 @@
 import speech_recognition as sr
 import pygame
 
+WIDTH, HEIGHT = 1400, 800
+
 letters = {'alpha': 'A', 'bravo': 'B', 'charlie': 'C', 'delta': 'D', 'echo': 'E', 'foxtrot': 'F', 'golf': 'G'}
 
 def speechRecognition(WIN):
