@@ -1,3 +1,4 @@
+from tkinter.tix import TEXT
 import pygame
 from network import Network
 import time
@@ -10,13 +11,36 @@ from pydub.playback import play
 ## Pygame Inits
 pygame.font.init()
 
-WIDTH, HEIGHT = 900, 500
+WIDTH, HEIGHT = 1400, 800
+#number of squares per edge of game board
+BOARD_EDGE = 5
+#size of game board
+BOARD_EDGE_SIZE = 500
+#size of each square in the game board
+SQUARE_EDGE = BOARD_EDGE_SIZE/BOARD_EDGE
 SQUARE_WIDTH = WIDTH//7
+#height the game text should be
+TEXT_HEIGHT = (HEIGHT - BOARD_EDGE_SIZE)* 3/4 + BOARD_EDGE_SIZE
 WIN = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption("Client")
 MODES = ['Keyboard', 'IMU', 'Camera', 'Speech']
 SOUNDS = ['Notes/A3.wav', 'Notes/B3.wav', 'Notes/C4.wav', 'Notes/D4.wav', 'Notes/E4.wav', 'Notes/F4.wav', 'Notes/G4.wav']
 LETTERS = ['A', 'B', 'C', 'D', 'E', 'F', 'G']
+
+board = [[0] * BOARD_EDGE for i in range(BOARD_EDGE)]
+
+red=pygame.image.load("red.jpg")
+yellow=pygame.image.load("yellow.jpg")
+blue=pygame.image.load("blue.jpg")
+p1=pygame.image.load("p1.jpg")
+p2=pygame.image.load("p2.jpg")
+
+#adjust images to correct size
+red=pygame.transform.scale(red, (SQUARE_EDGE, SQUARE_EDGE))
+yellow=pygame.transform.scale(yellow, (SQUARE_EDGE, SQUARE_EDGE))
+blue=pygame.transform.scale(blue, (SQUARE_EDGE, SQUARE_EDGE))
+p1=pygame.transform.scale(p1, (SQUARE_EDGE, SQUARE_EDGE))
+p2=pygame.transform.scale(p2, (SQUARE_EDGE, SQUARE_EDGE))
 
 def drawWindow(WIN, game):
 
@@ -27,19 +51,47 @@ def drawWindow(WIN, game):
     WIN.blit(text, text.get_rect(center = (WIDTH/2, HEIGHT/2)))
     pygame.display.update()
 
+def makeBoard():
+        for i in range(BOARD_EDGE):
+            for j in range(BOARD_EDGE):
+                y = random.randint(0, 2)
+                board[i][j] = y
+
+def drawBoardGrid(game):
+    board_height_start = (HEIGHT - BOARD_EDGE_SIZE)/2
+    board_width_start = (WIDTH - BOARD_EDGE_SIZE)/2
+
+    for i in range(game.boardH):
+        board_width_start = (WIDTH - BOARD_EDGE_SIZE)/2
+        for j in range(game.boardW):
+            if board[i][j] == 0:
+                WIN.blit(red,(board_width_start,board_height_start))
+            elif board[i][j] == 1:
+                WIN.blit(yellow,(board_width_start,board_height_start))
+            elif board[i][j] == 2:
+                WIN.blit(blue,(board_width_start,board_height_start))
+            else:
+                print("ERROR: Board numbers are wrong")
+            board_width_start += SQUARE_EDGE
+        board_height_start += SQUARE_EDGE
+
+    #WIN.blit(p1,((WIDTH - BOARD_EDGE_SIZE)/2 - SQUARE_EDGE,(HEIGHT - BOARD_EDGE_SIZE)/2 - SQUARE_EDGE))
+    #WIN.blit(p2,((WIDTH - BOARD_EDGE_SIZE)/2 - SQUARE_EDGE,(HEIGHT - BOARD_EDGE_SIZE)/2 - SQUARE_EDGE))
 
 def drawBoard(WIN, game, turn = False):
     WIN.fill((0,0,0))
     font = pygame.font.SysFont('comicsansms', 64)
+
+    #add if statement if you ever want to no print the board
+    drawBoardGrid(game)
+
     if turn:
         txt = font.render('Click to roll', True, (255,255,255))     
     else:
         txt = font.render('Player ' + str(game.currPlayer + 1) + ': ' + str(game.spots[game.currPlayer]), True, (255,255,255))
-    txtRect = txt.get_rect(center = (WIDTH/2, HEIGHT/2))
+    txtRect = txt.get_rect(center = (WIDTH/2, TEXT_HEIGHT)) #center for the text
     WIN.blit(txt, txtRect)
     pygame.display.update()
-    # for i in range(game.boardH):
-    #     for j in range(game.boadW):
 
     ## TO DO: draw game board and msg: "Click to roll dice"
 
@@ -48,7 +100,7 @@ def drawDiceRoll(WIN, game):
     WIN.fill((0,0,0))
     font = pygame.font.SysFont('comicsansms', 64)
     txt = font.render('Rolled a ' + str(game.currRoll), True, (255,255,255))
-    txtRect = txt.get_rect(center = (WIDTH/2, HEIGHT/2))
+    txtRect = txt.get_rect(center = (WIDTH/2, TEXT_HEIGHT))
     WIN.blit(txt, txtRect)
     pygame.display.update()
     pygame.time.delay(3000)
@@ -58,7 +110,7 @@ def drawMove(WIN):
     WIN.fill((0,0,0))
     font = pygame.font.SysFont('comicsansms', 64)
     txt = font.render('Move animation' , True, (255,255,255))
-    txtRect = txt.get_rect(center = (WIDTH/2, HEIGHT/2))
+    txtRect = txt.get_rect(center = (WIDTH/2, TEXT_HEIGHT))
     WIN.blit(txt, txtRect)
     pygame.display.update()
     pygame.time.delay(3000)
@@ -68,7 +120,7 @@ def drawTurn(WIN):
     WIN.fill((0,0,0))
     font = pygame.font.SysFont('comicsansms', 64)
     txt = font.render("Other player's move" , True, (255,255,255))
-    txtRect = txt.get_rect(center = (WIDTH/2, HEIGHT/2))
+    txtRect = txt.get_rect(center = (WIDTH/2, TEXT_HEIGHT))
     WIN.blit(txt, txtRect)
     pygame.display.update()
 
@@ -104,6 +156,7 @@ def main():
     player = int(n.getP())
     run = True
     clock = pygame.time.Clock()
+    makeBoard()
 
     while run:
         clock.tick(60)
