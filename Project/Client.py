@@ -145,6 +145,7 @@ def drawDiceRoll(WIN, roll):
     WIN.fill((0,0,0))
     WIN.blit(back, (0,0))
     WIN.blit(DICE[roll], diceRect)
+    pygame.display.update()
     pygame.time.delay(3000)
     ## TO DO: make animation for dice roll
 
