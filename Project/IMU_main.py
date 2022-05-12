@@ -1,6 +1,4 @@
 #will run on computer
-
-
 import numpy as np
 import csv
 import sys
@@ -66,7 +64,7 @@ def main():
 
 	print('running')
 
-	timeout = 10
+	timeout = 5
 	timeout_start = time.time()
 
 	while count !=1:
@@ -79,9 +77,6 @@ def main():
 
 	print('returned ' + ans)
 	return ans
-	
-
-#main()
 
 
 

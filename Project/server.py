@@ -5,11 +5,15 @@ from _thread import *
 import pickle
 from game import Game
 
+<<<<<<< HEAD
+server = "192.168.1.66"
+=======
 server = "192.168.1.89"
+>>>>>>> 0b9416e3b51a6e0b337e3f5089feeb80fcbb9930
 port = 5555
-rolls = ('1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12')
+rolls = ('1', '2', '3', '4', '5', '6')
 modes = ['Keyboard', 'IMU', 'Camera', 'Speech']
-phases = ['board', 'dice', 'turn', 'end']
+phases = ['board', 'turn', 'end']
 
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
@@ -46,6 +50,7 @@ def threaded_client(conn, p, gameId):
                     elif data == "move":
                         game.move()
                     elif data in rolls:
+                        game.nextPhase('dice')
                         game.newRoll(data)
                     elif data != "get":
                         game.check(data)

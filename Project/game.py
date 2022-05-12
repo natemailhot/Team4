@@ -1,8 +1,6 @@
-  ## Melody Simon-says prototype ##
+ ## Melody Simon-says prototype ##
 import os
 import random
-
-
 modes = ['Keyboard', 'Camera', 'Speech', 'IMU']
 
 class Game:
@@ -27,23 +25,23 @@ class Game:
         self.winner = 0
         
 
-
     def makeBoard(self, h, w):
         board = [[0 for i in range(h)] for j in range(w)]
         for i in range(h):
             for j in range(w):
-                board[i][j] = random.randint(1, 2)
+                board[i][j] = random.randint(0, 0)
         return(board)
     
 
     def newRoll(self, num):
+        print("NEWROLL " + num)
         num = int(num)
         self.currRoll = num
         self.rolled = True
         if self.spots[self.currPlayer] + self.currRoll < self.boardH*self.boardW:
-            self.currMode = modes[self.board[(self.spots[self.currPlayer] + self.currRoll)//self.boardH][(self.spots[self.currPlayer] + self.currRoll)%self.boardH]]
-        else:
-            self.currMode = modes[self.board[self.boardH-1][self.boardW-1]]
+            self.currMode = modes[self.board[(self.spots[self.currPlayer])//self.boardH][(self.spots[self.currPlayer])%self.boardH]]
+        # else:
+        #     self.currMode = modes[self.board[self.boardH-1][self.boardW-1]]
         self.makeSound(self.currMode)
     
 
@@ -109,16 +107,6 @@ class Game:
         self.went = False
         self.correct = False
         self.currPlayer = 0
-
-    def getP1(self):
-        return(self.p1)
-
-    def getP2(self):
-        return(self.p2)
-    
-    def printMelody(self):
-        print(self.melody)
-        return
             
 
     def check(self, ans):
@@ -129,15 +117,18 @@ class Game:
             print("Wrong")
         self.went = True
 
+    def setCorrect(self, correct):
+        self.correct = correct
+
     def getAns(self, player):
         return(self.answers[player])
-
 
     def connected(self):
         return self.ready
     
-    def resetWent(self):
-        self.went = [False, False]
-        self.p1 = False
-        self.p2 = False
+    def setMode(self, mode):
+        self.currMode = mode
 
+    def setRoll(self, num):
+        self.currRoll = num
+        self.makeSound(self.currMode)
