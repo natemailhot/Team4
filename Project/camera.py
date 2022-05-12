@@ -162,11 +162,8 @@ def camera(str_length, keyboard_size):
 
     ans = ''
     for i in range(len(arr)):
-        ans += str(arr[i])
+        ans += str(6 - arr[i])
 
     return ans
 
     cap.release()
-
-#array_returned = camera(5, 5)
-#print(array_returned)
