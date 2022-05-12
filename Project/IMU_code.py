@@ -19,6 +19,7 @@ from pydub.playback import play
 
 															#ALL PRINT STATMENTS ARE STILL IN THIS CODE
 
+#clientid = 123456
 
 IMU.detectIMU()     #Detect if BerryIMU is connected.
 if(IMU.BerryIMUversion == 99):
@@ -115,10 +116,12 @@ def kalmanFilterX ( accAngle, gyroRate, DT):
 
 	return KFangleX
 
-def on_message(client, userdata, message):
-	print('message received')
-	
-	ans = ''
+def main():
+	print('start')
+
+	clienttemp = mqtt.Client('hopefullythisisauniqueclientname1234567890123456789012345') #tempclient
+	clienttemp.connect_async('test.mosquitto.org') #'test.mosquito.org' vs IP address
+	clienttemp.loop_start()
 
 
 	RAD_TO_DEG = 57.29578
@@ -199,12 +202,10 @@ def on_message(client, userdata, message):
 	mag_medianTable2Z = [1] * MAG_MEDIANTABLESIZE
 
 
-	count=1
 	kalXarray = [0,0,0,0,0]
-	xang=[]
 
 
-	while count<100:
+	while True:
 
 		#Read the accelerometer,gyroscope and magnetometer values
 		ACCx = IMU.readACCx()
@@ -423,58 +424,19 @@ def on_message(client, userdata, message):
 		xG = (ACCy * 0.244)/1000
 		zG = (ACCz * 0.244)/1000
 
+		clienttemp.publish('ece180d/IMU', str(gyroXangle), qos=1)
+
 		#slow program down a bit, makes the output more readable
-		time.sleep(0.03)                         #remove?
+		time.sleep(0.03)                         #change this timing to adjust how accurate intervals are?
 
 
-		xang.append(gyroXangle)
-		count=count+1
-		print('counting')
-		print(gyroXangle)
-
-
-
-
-
-	xang[xang == 0] = np.nan   #takes zeroes out of average
-	mean = np.nanmean(xang)
-	print(mean)
-
-
-	if mean<-0.7: #upward movement of hand (instruct to hold hand when finished)
-		ans = '^'
-
-	elif mean>0.7: #downward movement of hand (instruct to hold hand when finished)
-		ans = 'v'
-
-	elif mean>-0.7 and mean<0.7: #no movement of hand (instruct to hold hand when finished)
-		ans = '>'
-
-	clienttemp = mqtt.Client('tempclient')
-	clienttemp.connect_async('test.mosquitto.org')
-	clienttemp.loop_start()
-	clienttemp.publish('ece180d/IMU2', str(ans), qos=1)
 	clienttemp.loop_stop() 
-	clienttemp.loop_stop()
 	clienttemp.disconnect()
 
 
+main()
 
 
-client2 = mqtt.Client('secondclient')
-client2.on_message = on_message
-client2.connect_async('test.mosquitto.org')
-client2.loop_start()
-
-print('running')
-
-while True:
-	client2.subscribe('ece180d/IMU')
-
-
-
-client.loop_stop()
-client.disconnect()
 
 
 
