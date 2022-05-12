@@ -1,6 +1,4 @@
 #will run on computer
-
-
 import numpy as np
 import csv
 import sys
