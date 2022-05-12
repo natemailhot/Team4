@@ -1,12 +1,15 @@
 import pygame
 from network import Network
 import random
+<<<<<<< HEAD
 import medium_mode_DandF as speech
 import camera
 import IMU_main
 import camera
 import game
 from tutorial import tutorial
+=======
+>>>>>>> 0b9416e3b51a6e0b337e3f5089feeb80fcbb9930
 from pydub import AudioSegment
 from pydub.playback import play
 # from board import drawBoard
@@ -15,6 +18,7 @@ from pydub.playback import play
 ## Pygame Inits
 pygame.font.init()
 
+<<<<<<< HEAD
 FPS = 60
 
 WIDTH, HEIGHT = 1400, 800
@@ -75,6 +79,15 @@ def playGame(game, WIN):
         elif game.currMode == 'Speech':
             game.currAnswer = speech.speechRecognition(WIN)
         return(game.currAnswer)
+=======
+WIDTH, HEIGHT = 900, 500
+SQUARE_WIDTH = WIDTH//7
+WIN = pygame.display.set_mode((WIDTH, HEIGHT))
+pygame.display.set_caption("Client")
+MODES = ['Keyboard', 'IMU', 'Camera', 'Speech']
+SOUNDS = ['Notes/A3.wav', 'Notes/B3.wav', 'Notes/C4.wav', 'Notes/D4.wav', 'Notes/E4.wav', 'Notes/F4.wav', 'Notes/G4.wav']
+LETTERS = ['A', 'B', 'C', 'D', 'E', 'F', 'G']
+>>>>>>> 0b9416e3b51a6e0b337e3f5089feeb80fcbb9930
 
 def drawWindow(WIN, game):
 
@@ -249,7 +262,11 @@ def main():
                 if game.currPlayer == player:
                     if not game.went:
                         playSound(WIN, game)
+<<<<<<< HEAD
                         ans = playGame(game, WIN)
+=======
+                        ans = game.play()
+>>>>>>> 0b9416e3b51a6e0b337e3f5089feeb80fcbb9930
                         n.send(ans)
                     else:
                         print("Went")
@@ -266,6 +283,47 @@ def main():
                 n.send('reset')
                 n.close()
                 menu_screen()
+<<<<<<< HEAD
+=======
+        
+
+        ## If both player went, next round or reset
+        # if game.bothWent():
+        #     WIN.fill((0,0,0))
+        #     pygame.time.delay(500)
+
+        #     font = pygame.font.SysFont('comicsansms', 64)
+
+        #     if game.getP1() and game.getP2():
+        #         txt = font.render('Both players correct!', True, (255,255,255))
+        #         txtRect = txt.get_rect(center = (WIDTH/2, HEIGHT/2))
+        #         WIN.blit(txt, txtRect)
+        #         pygame.display.update()
+        #         pygame.time.delay(5000)
+        #         try:
+        #             game = n.send("next")
+        #         except:
+        #             run = False
+        #             print("Couldn't make new round")
+        #             break
+        #     else:
+        #         try:
+        #             if game.getP1():
+        #                 winner = '1'
+        #             else:
+        #                 winner = '2'
+
+        #             txt = font.render('Player ' + winner + ' wins!', True, (255,255,255))
+        #             txtRect = txt.get_rect(center = (WIDTH/2, HEIGHT/2))
+        #             WIN.blit(txt, txtRect)
+        #             pygame.display.update()
+        #             pygame.time.delay(5000)
+        #             game = n.send("reset")
+        #         except:
+        #             run = False
+        #             print("Couldn't get game")
+        #             break
+>>>>>>> 0b9416e3b51a6e0b337e3f5089feeb80fcbb9930
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -304,3 +362,12 @@ def menu_screen():
                     run = False
     pygame.time.wait(2500)
     main()
+<<<<<<< HEAD
+=======
+
+while True:
+    menu_screen()
+
+
+
+>>>>>>> 0b9416e3b51a6e0b337e3f5089feeb80fcbb9930

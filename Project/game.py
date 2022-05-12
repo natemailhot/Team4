@@ -1,7 +1,16 @@
  ## Melody Simon-says prototype ##
 import os
 import random
+<<<<<<< HEAD
 
+=======
+import IMU_main
+import medium_mode_DandF as speech
+import camera
+import IMU_main
+import camera
+import medium_mode_DandF as speech
+>>>>>>> 0b9416e3b51a6e0b337e3f5089feeb80fcbb9930
 
 modes = ['Keyboard', 'Camera', 'Speech', 'IMU']
 
@@ -110,6 +119,32 @@ class Game:
         self.went = False
         self.correct = False
         self.currPlayer = 0
+<<<<<<< HEAD
+=======
+
+    def getP1(self):
+        return(self.p1)
+
+    def getP2(self):
+        return(self.p2)
+    
+    def printMelody(self):
+        print(self.melody)
+        return
+
+
+    def play(self):
+        print(self.currMode)
+        if self.currMode == 'Keyboard':
+            self.currAnswer = input('^, >, v')
+        elif self.currMode == 'IMU':
+            self.currAnswer = IMU_main.main()
+        elif self.currMode == 'Camera':
+            self.currAnswer = camera.camera(self.currRoll)
+        elif self.currMode == 'Speech':
+            self.currAnswer = speech.speechRecognition()
+        return(self.currAnswer)
+>>>>>>> 0b9416e3b51a6e0b337e3f5089feeb80fcbb9930
             
 
     def check(self, ans):
