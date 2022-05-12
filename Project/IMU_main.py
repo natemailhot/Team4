@@ -1,4 +1,5 @@
 #call this file's main fuction to run IMU gamemode
+#accepts roll number as input agrument for main()
 
 import numpy as np
 import csv
