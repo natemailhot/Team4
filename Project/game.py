@@ -1,19 +1,14 @@
  ## Melody Simon-says prototype ##
 import os
 import random
-import IMU_main
-import medium_mode_DandF as speech
-import camera
-import IMU_main
-import camera
-import medium_mode_DandF as speech
+
 
 modes = ['Keyboard', 'Camera', 'Speech', 'IMU']
 
 class Game:
     def __init__(self, id):
-        self.boardH = 2
-        self.boardW = 2
+        self.boardH = 5
+        self.boardW = 5
         self.board = self.makeBoard(self.boardH, self.boardW)
         self.currPlayer = 0
         self.rolled = False
@@ -34,21 +29,22 @@ class Game:
 
 
     def makeBoard(self, h, w):
-        board = [0 for i in range(w*h)]
-        # for i in range(h):
-        #     for j in range(w):
-        #         board[8*i+j] = random.randint(0, 3)
+        board = [[0 for i in range(h)] for j in range(w)]
+        for i in range(h):
+            for j in range(w):
+                board[i][j] = random.randint(0, 0)
         return(board)
     
 
     def newRoll(self, num):
+        print("NEWROLL " + num)
         num = int(num)
         self.currRoll = num
         self.rolled = True
-        if self.spots[self.currPlayer] + self.currRoll < len(self.board):
-            self.currMode = modes[self.board[self.spots[self.currPlayer] + self.currRoll]]
-        else:
-            self.currMode = modes[self.board[-1]]
+        if self.spots[self.currPlayer] + self.currRoll < self.boardH*self.boardW:
+            self.currMode = modes[self.board[(self.spots[self.currPlayer])//self.boardH][(self.spots[self.currPlayer])%self.boardH]]
+        # else:
+        #     self.currMode = modes[self.board[self.boardH-1][self.boardW-1]]
         self.makeSound(self.currMode)
     
 
@@ -98,7 +94,7 @@ class Game:
 
     def move(self):
         self.spots[self.currPlayer] += self.currRoll
-        if self.spots[self.currPlayer] >= len(self.board):
+        if self.spots[self.currPlayer] >= self.boardH*self.boardW:
             self.phase = 'end'
             self.winner = self.currPlayer
         self.correct = False
@@ -114,29 +110,6 @@ class Game:
         self.went = False
         self.correct = False
         self.currPlayer = 0
-
-    def getP1(self):
-        return(self.p1)
-
-    def getP2(self):
-        return(self.p2)
-    
-    def printMelody(self):
-        print(self.melody)
-        return
-
-
-    def play(self):
-        print(self.currMode)
-        if self.currMode == 'Keyboard':
-            self.currAnswer = input('^, >, v')
-        elif self.currMode == 'IMU':
-            self.currAnswer = IMU_main.main()
-        elif self.currMode == 'Camera':
-            self.currAnswer = camera.camera(self.currRoll)
-        elif self.currMode == 'Speech':
-            self.currAnswer = speech.speechRecognition()
-        return(self.currAnswer)
             
 
     def check(self, ans):
@@ -150,12 +123,12 @@ class Game:
     def getAns(self, player):
         return(self.answers[player])
 
-
     def connected(self):
         return self.ready
     
-    def resetWent(self):
-        self.went = [False, False]
-        self.p1 = False
-        self.p2 = False
+    def setMode(self, mode):
+        self.currMode = mode
 
+    def setRoll(self, num):
+        self.currRoll = num
+        self.makeSound(self.currMode)

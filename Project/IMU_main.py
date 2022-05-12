@@ -14,7 +14,7 @@ import time,logging
 
 															#ALL PRINT STATMENTS ARE STILL IN THIS CODE
 
-ans = ''
+ans = '+'
 count = 0
 
 def on_connect(client, userdata, flags, rc):
@@ -56,17 +56,22 @@ def main():
 	global count
 	count = 0
 
-	client = mqtt.Client('firstclient')
+	client = mqtt.Client('hopefullythisisauniqueclientname12345678901234567890123')  #'firstclient'
 	client.on_connect = on_connect
 	client.on_message = on_message
 	client.connect_async('test.mosquitto.org')
 	client.loop_start()
 
-	print('running')
-
 	client.publish('ece180d/IMU', 'begin', qos=1)
 
-	while count != 1:
+	print('running')
+
+	timeout = 5
+	timeout_start = time.time()
+
+	while count !=1:
+		if (time.time() > timeout+timeout_start):
+			break
 		pass
 
 	client.loop_stop()
@@ -74,9 +79,6 @@ def main():
 
 	print('returned ' + ans)
 	return ans
-	
-
-#main()
 
 
 
