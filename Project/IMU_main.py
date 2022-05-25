@@ -1,6 +1,7 @@
 #call this file's main fuction to run IMU gamemode
 #accepts roll number as input agrument for main()
 
+from cmath import rect
 import numpy as np
 import csv
 import sys
@@ -10,6 +11,7 @@ import datetime
 import os
 import paho.mqtt.client as mqtt
 import time,logging
+import pygame
 
 
 #print statements are still in this code
@@ -17,7 +19,10 @@ import time,logging
 ans_str = ''      #empty string for returned answers
 xang=[0] * 100   #sets array to 100 zeroes (this is due to not wanting to trigger break statement when there are only three elements in array)
 
-
+arrow = pygame.image.load("Archive/white-arrow.png")
+up = pygame.transform.scale(arrow, (250, 500))
+down = pygame.transform.flip(arrow, False, True)
+images = {'^': up, 'v': down}
 
 def on_connect(client, userdata, flags, rc):
   print('connected')
@@ -57,7 +62,7 @@ def on_message(client, userdata, message):
 
 
 
-def main(roll_num):   #accepts roll number as arguement
+def main(WIN, roll_num):   #accepts roll number as arguement
 
 	client = mqtt.Client('hopefullythisisauniqueclientname12345678901234567890123')  #client name is irrelevant
 	client.on_connect = on_connect
@@ -107,6 +112,9 @@ def main(roll_num):   #accepts roll number as arguement
 
 		ans_str += ans
 
+		im = images[ans]
+		WIN.fill((0,0,0))
+		WIN.blit(im, im.get_rect(center = (700, 400)))
 		print('answer was ' + ans)
 
 		xang.clear()       #clear the queue of past data
