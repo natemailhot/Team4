@@ -28,6 +28,7 @@ def drawMsg(WIN, msg, background = ''):
 
     WIN.blit(text, rect)
     pygame.display.update()
+    Client.checkQuit()
     pygame.time.delay(msgTime)
 
 

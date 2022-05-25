@@ -23,6 +23,7 @@ class Game:
         self.sol = ''
         self.melody = [0]
         self.winner = 0
+        self.oldSpot= 0
         
 
     def makeBoard(self, h, w):
@@ -46,11 +47,14 @@ class Game:
     
 
     def makeSound(self, mode):
-        print(self.currRoll)
+        lastnum = 7
         self.sol = ''
         self.melody = [0 for i in range(self.currRoll)]
         for i in range(self.currRoll):
             self.melody[i] = random.randint(0, 6) # 6 is number of sounds
+            while self.melody[i] == lastnum:    #Note can't be played consecutively
+                self.melody[i] = random.randint(0,6)
+            lastnum = self.melody[i]
             self.sol += str(self.melody[i])
         if mode == 'Keyboard' or mode == 'IMU':
             relation = [0 for i in range(self.currRoll - 1)]
@@ -90,6 +94,7 @@ class Game:
         return(self.phase)
 
     def move(self):
+        self.oldSpot = self.spots[self.currPlayer]
         self.spots[self.currPlayer] += self.currRoll
         if self.spots[self.currPlayer] >= self.boardH*self.boardW:
             self.phase = 'end'

@@ -5,11 +5,7 @@ from _thread import *
 import pickle
 from game import Game
 
-<<<<<<< HEAD
-server = "192.168.1.66"
-=======
-server = "192.168.1.89"
->>>>>>> 0b9416e3b51a6e0b337e3f5089feeb80fcbb9930
+server = "172.30.8.243"
 port = 5555
 rolls = ('1', '2', '3', '4', '5', '6')
 modes = ['Keyboard', 'IMU', 'Camera', 'Speech']
