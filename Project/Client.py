@@ -32,7 +32,7 @@ DIE_LENGTH = 150
 SQUARE_WIDTH = WIDTH//7
 WIN = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption("Client")
-MODES = ['Keyboard', 'Camera', 'Speech']
+MODES = ['Keyboard', 'Camera', 'Speech', 'IMU']
 SOUNDS = ['Notes/A3.wav', 'Notes/B3.wav', 'Notes/C4.wav', 'Notes/D4.wav', 'Notes/E4.wav', 'Notes/F4.wav', 'Notes/G4.wav']
 LETTERS = ['A', 'B', 'C', 'D', 'E', 'F', 'G']
 
@@ -69,7 +69,7 @@ ROLLED = False ## Client variable to make sure dice roll is only sent once
 SQUARE_WIDTH = WIDTH//7
 WIN = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption("Client")
-MODES = ['Keyboard', 'Camera', 'Speech']
+MODES = ['Keyboard', 'Camera', 'Speech', 'IMU']
 SOUNDS = ['Notes/A3.wav', 'Notes/B3.wav', 'Notes/C4.wav', 'Notes/D4.wav', 'Notes/E4.wav', 'Notes/F4.wav', 'Notes/G4.wav']
 LETTERS = ['A', 'B', 'C', 'D', 'E', 'F', 'G']
 
@@ -136,7 +136,7 @@ def drawLegend():
     text1 = font.render("Player 1", True, (255,255,255))
     text2 = font.render("Player 2", True, (255,255,255))
     IMUtext = font.render("IMU", True, (255,255,255))
-    cameratext = font.render("Keyboard", True, (255,255,255))
+    cameratext = font.render("Camera", True, (255,255,255))
     speechtext = font.render("Speech", True, (255,255,255))
     WIN.blit(text1, (SQUARE_EDGE//2 + 10, 0))
     WIN.blit(text2, (SQUARE_EDGE//2 + 10, SQUARE_EDGE//2))
@@ -171,11 +171,11 @@ def drawBoardGrid(game, players = 2, moving = False, r = 0, c = 0):
         # else:
         #     board_width_start = (WIDTH - BOARD_EDGE_SIZE)/2 + SQUARE_EDGE*game.boardW
         for j in range(game.boardW):
-            if game.board[i][j] == 0:
+            if game.board[i][j] == 1:
                 WIN.blit(red,(board_width_start,board_height_start))
-            elif game.board[i][j] == 1:
-                WIN.blit(yellow,(board_width_start,board_height_start))
             elif game.board[i][j] == 2:
+                WIN.blit(yellow,(board_width_start,board_height_start))
+            elif game.board[i][j] == 3:
                 WIN.blit(blue,(board_width_start,board_height_start))
             else:
                 print("ERROR: Board numbers are wrong")
