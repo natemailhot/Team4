@@ -15,6 +15,9 @@ from pydub.playback import play
 
 ## Pygame Inits
 pygame.font.init()
+pygame.mixer.init()
+pygame.mixer.music.load("Archive/Skating.mp3")
+pygame.mixer.music.set_volume(0.7)
 
 FPS = 60
 
@@ -311,6 +314,7 @@ def main():
     player = int(n.getP())
     run = True
     clock = pygame.time.Clock()
+    pygame.mixer.music.play(-1)
 
     while run:
         clock.tick(FPS)
@@ -358,6 +362,7 @@ def main():
             elif game.phase == 'turn':
                 if game.currPlayer == player:
                     if not game.went:
+                        pygame.mixer.music.pause()
                         playSound(WIN, game)
 
                         ans = playGame(game, WIN)
@@ -365,6 +370,7 @@ def main():
                     else:
                         print("Went")
                         if game.correct:
+                            pygame.mixer.music.unpause()
                             drawMove(WIN, game)
                             n.send('move')
                         else:

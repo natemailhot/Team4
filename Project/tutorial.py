@@ -83,5 +83,24 @@ def tutorial(WIN):
         msg = "Incorrect."
     drawMsg(WIN, msg)
 
+    msg = "Now try following the pitch by moving the controller."
+    drawMsg(WIN, msg)
+
+    msg = "If a note is higher than the previous note, rotate upward."
+    drawMsg(WIN, msg)
+
+    msg = "If a note is lower than the previous note, rotate downward."
+    drawMsg(WIN, msg)
+
+    game.setMode('IMU')
+    Client.playSound(WIN, game)
+    ans = Client.playgame(game, WIN)
+    game.check(ans)
+    if game.correct:
+        msg = "Correct!"
+    else:
+        msg = "Incorrect."
+    drawMsg(WIN, msg)
+
     msg = "Have fun playing!"
     drawMsg(WIN, msg)

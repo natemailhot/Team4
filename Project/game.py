@@ -30,7 +30,7 @@ class Game:
         board = [[0 for i in range(h)] for j in range(w)]
         for i in range(h):
             for j in range(w):
-                board[i][j] = random.randint(0, 0)
+                board[i][j] = random.randint(1, 2)
         return(board)
     
 
