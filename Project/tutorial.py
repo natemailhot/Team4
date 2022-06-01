@@ -7,6 +7,11 @@ WIDTH, HEIGHT = 1400, 800
 FPS = 60
 msgTime = 3000
 pygame.font.init()
+pygame.mixer.pre_init(44100, -16, 1, 512)
+pygame.mixer.init()
+pygame.mixer.music.load("Archive/skating.wav")
+pygame.mixer.music.set_volume(0.7)
+
 game = game.Game(1)
 
 def drawMsg(WIN, msg, background = ''):
@@ -33,7 +38,7 @@ def drawMsg(WIN, msg, background = ''):
 
 
 def tutorial(WIN):
-
+    pygame.mixer.music.play(-1)
     msg = 'Welcome to PitchPerfect.io!'
     drawMsg(WIN, msg)
     
@@ -57,12 +62,14 @@ def tutorial(WIN):
     
     game.setMode('Camera')
     game.setRoll(3)
+    pygame.mixer.music.pause()
     Client.playSound(WIN, game)
 
     msg = "Copy the melody on the keyboard with your index finger."
     drawMsg(WIN, msg, 'Keyboard')
 
     ans = Client.playGame(game, WIN)
+    pygame.mixer.music.unpause()
     game.check(ans)
     if game.correct:
         msg = "Correct!"
@@ -74,8 +81,10 @@ def tutorial(WIN):
     drawMsg(WIN, msg, 'Keyboard')
 
     game.setMode('Speech')
+    pygame.mixer.music.pause()
     Client.playSound(WIN, game)
     ans = Client.playGame(game, WIN)
+    pygame.mixer.music.unpause()
     game.check(ans)
     if game.correct:
         msg = "Correct!"
@@ -93,8 +102,10 @@ def tutorial(WIN):
     drawMsg(WIN, msg)
 
     game.setMode('IMU')
+    pygame.mixer.music.pause()
     Client.playSound(WIN, game)
-    ans = Client.playgame(game, WIN)
+    ans = Client.playGame(game, WIN)
+    pygame.mixer.music.unpause()
     game.check(ans)
     if game.correct:
         msg = "Correct!"
@@ -104,3 +115,4 @@ def tutorial(WIN):
 
     msg = "Have fun playing!"
     drawMsg(WIN, msg)
+    pygame.mixer.music.stop()

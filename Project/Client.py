@@ -15,8 +15,9 @@ from pydub.playback import play
 
 ## Pygame Inits
 pygame.font.init()
+pygame.mixer.pre_init(44100, -16, 1, 512)
 pygame.mixer.init()
-pygame.mixer.music.load("Archive/Skating.mp3")
+pygame.mixer.music.load("Archive/skating.wav")
 pygame.mixer.music.set_volume(0.7)
 
 FPS = 60
@@ -154,7 +155,7 @@ def drawBoard(WIN, game, turn = False):
     drawLegend()
     drawBoardGrid(game)
     if turn:
-        txt = font.render('Roll the die!', True, (255,255,255))     
+        txt = font.render('Click to roll the die!', True, (255,255,255))    
     else:
         txt = font.render("Other player's turn", True, (255,255,255))
     txtRect = txt.get_rect(center = (WIDTH/2, TEXT_HEIGHT))
@@ -241,6 +242,8 @@ def moving():
 
 def drawDiceRoll(WIN, roll):
     diceRect = D1.get_rect(center = (WIDTH/2, TEXT_HEIGHT))
+    pygame.mixer.music.pause()
+    pygame.mixer.Channel(0).play(pygame.mixer.Sound('Archive/dice.wav'))
     for i in range(50):
         pygame.time.delay(60)
         WIN.fill((0,0,0))
@@ -254,6 +257,7 @@ def drawDiceRoll(WIN, roll):
     WIN.blit(DICE[roll], diceRect)
     pygame.display.update()
     pygame.time.delay(3000)
+    pygame.mixer.music.unpause()
 
 def drawMove(WIN, game):
     WIN.fill((0,0,0))
@@ -282,7 +286,9 @@ def drawEnd(WIN, game):
     txt = font.render("Player " + str(game.winner + 1) + " wins!" , True, (255,255,255))
     txtRect = txt.get_rect(center = (WIDTH/2, TEXT_HEIGHT))
     WIN.blit(txt, txtRect)
+    pygame.mixer.Channel(1).play(pygame.mixer.Sound('Archive/winner.wav'))
     pygame.display.update()
+    pygame.time.delay(6000)
 
 def drawSound(WIN, note):
     WIN.fill((0,0,0))
@@ -314,7 +320,7 @@ def main():
     player = int(n.getP())
     run = True
     clock = pygame.time.Clock()
-    pygame.mixer.music.play(-1)
+    
 
     while run:
         clock.tick(FPS)
@@ -333,9 +339,9 @@ def main():
                 ROLLED = False
                 if game.currPlayer == player:
                     drawBoard(WIN, game, True)
-                    pygame.time.delay(10000)
-                    #IMU_main.main()
-                    n.send('board')
+                    for event in pygame.event.get():
+                        if event.type == pygame.MOUSEBUTTONDOWN:
+                            n.send('board')
                 else:
                     drawBoard(WIN, game)
                 for event in pygame.event.get():
@@ -391,6 +397,7 @@ def main():
 def menu_screen():
     run = True
     clock = pygame.time.Clock()
+    pygame.mixer.music.play(-1)
 
     while run:
         clock.tick(FPS)
@@ -414,11 +421,13 @@ def menu_screen():
                 pygame.quit()
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_t:
+                    pygame.mixer.music.pause()
                     tutorial(WIN)
+                    pygame.mixer.music.unpause()
                 else:
                     run = False
     pygame.time.wait(2500)
     main()
 
-while True:
-    menu_screen()
+# while True:
+#     menu_screen()
