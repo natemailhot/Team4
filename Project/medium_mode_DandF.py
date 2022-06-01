@@ -101,6 +101,7 @@ def speechRecognition(WIN):
             text = font.render(txt, True, (255,255,255))
             WIN.blit(text, text.get_rect(center = (WIDTH/2, HEIGHT/2)))
             pygame.display.update()
+            pygame.time.delay(1000)
         
             
     #speech Recognition errors
