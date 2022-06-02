@@ -269,7 +269,7 @@ def drawMove(WIN, game):
     pygame.display.update()
     pygame.time.delay(4000)
     ## TO DO: make animation for player movement on board
-    moving()
+    #moving()
 
 def drawTurn(WIN):
     WIN.fill((0,0,0))
