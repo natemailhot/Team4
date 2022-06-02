@@ -16,7 +16,7 @@ class Game:
         self.ready = False
         self.id = id
         self.numPlayers = 2
-        self.spots = [0 for i in range(self.numPlayers)]
+        self.spots = [0, 0]
         self.currAnswer = ''
         self.currRoll = 0
         self.currMode = 'Keyboard'

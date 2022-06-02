@@ -193,9 +193,15 @@ def drawBoardGrid(game, players = 2, moving = False, r = 0, c = 0):
 
     #for i in range(game.numPlayers):
     r1 = BOARD_EDGE - game.spots[0]//BOARD_EDGE
-    c1 = BOARD_EDGE - game.spots[0]%BOARD_EDGE
+    if ((game.spots[0]//BOARD_EDGE)%2) == 0:
+        c1 = game.spots[0]%BOARD_EDGE
+    else:
+        c1 = BOARD_EDGE - game.spots[0]%BOARD_EDGE - 1
     r2 = BOARD_EDGE - game.spots[1] // BOARD_EDGE
-    c2 = BOARD_EDGE - game.spots[1]%BOARD_EDGE
+    if ((game.spots[1]//BOARD_EDGE)%2) == 0:
+        c2 = game.spots[1]%BOARD_EDGE
+    else:
+        c2 = BOARD_EDGE - game.spots[1]%BOARD_EDGE - 1
 
     if moving:
         if game.currPlayer == 0:
@@ -205,12 +211,12 @@ def drawBoardGrid(game, players = 2, moving = False, r = 0, c = 0):
             r2 = r
             c2 = c
 
-    w1 = WIDTH - 350
+    w1 = 450
     #(WIDTH - BOARD_EDGE_SIZE)/2 - 2*SQUARE_EDGE
     h1 = 75
-    WIN.blit(p1,(w1 - (c1+1)*SQUARE_EDGE, h1 + r1*SQUARE_EDGE))
+    WIN.blit(p1,(w1 + (c1)*SQUARE_EDGE, h1 + r1*SQUARE_EDGE))
     if players > 1:
-        WIN.blit(p2,(w1 - (c2+1)*SQUARE_EDGE+50,h1 + r2*SQUARE_EDGE))
+        WIN.blit(p2,(w1 + (c2)*SQUARE_EDGE+50,h1 + r2*SQUARE_EDGE))
 
 def moving():
     spot = game.oldSpot
